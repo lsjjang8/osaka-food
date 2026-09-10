@@ -8,15 +8,19 @@
 <style>
 :root {
   --bg:#fffaf7;--panel:#fff;--text:#1f1b18;--muted:#746b65;--line:#ebe1da;
-  --soft:#f7f1ed;--chip:#fff0f3;--chiptext:#a73b55;--shadow:0 12px 36px rgba(60,38,27,.08);
+  --soft:#f7f1ed;--chip:#fff0f3;--chiptext:#a73b55;--green:#18794e;
+  --shadow:0 12px 36px rgba(60,38,27,.08);
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;color:var(--text);background:var(--bg)}
+button,input,textarea{font:inherit}
 .app{max-width:1450px;margin:auto;display:grid;grid-template-columns:minmax(540px,1fr) 480px;gap:18px;padding:16px}
 .left{min-width:0}
 .hero{padding:18px 20px;background:linear-gradient(135deg,#fff,#fff0e7);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.herorow{display:flex;justify-content:space-between;gap:16px;align-items:center}
 .hero h1{margin:0 0 6px;font-size:27px;letter-spacing:-.045em}
 .hero p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.addtop{border:0;background:#1f1b18;color:#fff;border-radius:14px;padding:11px 14px;font-weight:850;white-space:nowrap;cursor:pointer}
 .controls{position:sticky;top:0;z-index:20;padding:10px 0 7px;background:rgba(255,250,247,.94);backdrop-filter:blur(12px)}
 .search{width:100%;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:15px;outline:none}
 .tabs{display:flex;gap:7px;overflow:auto;padding-top:9px;scrollbar-width:none}
@@ -28,6 +32,7 @@ html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,
 .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:0 3px 14px rgba(65,39,27,.04);transition:.16s}
 .card:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(65,39,27,.07)}
 .card.selected{border-color:#c9b4a7;box-shadow:0 0 0 2px #f0e5de}
+.newbadge{display:inline-block;margin-left:5px;background:#e8f6ee;color:var(--green);padding:3px 6px;border-radius:999px;font-size:10px;font-weight:850;vertical-align:1px}
 .row{display:flex;justify-content:space-between;gap:10px;align-items:start}
 .name{font-size:17px;font-weight:850;line-height:1.35;letter-spacing:-.025em;cursor:pointer;text-decoration:underline;text-decoration-color:#ded0c8;text-underline-offset:4px}
 .score{font-size:14px;font-weight:850;white-space:nowrap}
@@ -35,86 +40,90 @@ html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,
 .cat{display:inline-block;background:var(--chip);color:var(--chiptext);border-radius:999px;padding:5px 7px;font-size:11px;font-weight:700}
 .area{font-size:11px;color:var(--muted);margin-left:5px}
 .summary{font-size:13px;line-height:1.55;color:#4d4641;margin:11px 0 12px}
+.usernote{font-size:12px;line-height:1.5;background:#fff7d9;padding:8px 9px;border-radius:10px;margin:-3px 0 12px}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .btn{display:flex;align-items:center;justify-content:center;border:0;border-radius:11px;padding:10px 7px;font-size:12px;font-weight:800;text-decoration:none;cursor:pointer}
 .detailbtn{background:var(--soft);color:#4c4039}
 .mapbtn{background:#211d1a;color:#fff}
-
 .rightwrap{position:relative}
 .detailpanel{position:sticky;top:16px;height:calc(100vh - 32px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
-.maphero{height:210px;background:#eee;position:relative;border-radius:22px 22px 0 0;overflow:hidden}
-
+.maphero{height:190px;position:relative;border-radius:22px 22px 0 0;overflow:hidden;display:flex;align-items:flex-end;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.95) 0 7%,transparent 8%),linear-gradient(135deg,#f7e9df,#eadfd6 55%,#ded3cb)}
+.hero-place{margin:18px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.7);border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 25px rgba(65,39,27,.09)}
+.hero-pin{font-size:24px} .hero-area{font-size:12px;color:#6f655f;font-weight:700} .hero-cat{font-size:15px;font-weight:850;margin-top:2px}
 .closemobile{display:none;position:absolute;right:12px;top:12px;z-index:5;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.94);font-size:22px;box-shadow:0 2px 9px rgba(0,0,0,.13)}
 .detailbody{padding:20px}
 .dtitle{font-size:25px;font-weight:900;line-height:1.25;letter-spacing:-.045em;margin:0 0 6px}
-.dmeta{font-size:13px;color:#4f4742;line-height:1.5}
-.dmeta b{color:#151210}
+.dmeta{font-size:13px;color:#4f4742;line-height:1.5} .dmeta b{color:#151210}
 .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0}
 .quick a{border:1px solid var(--line);border-radius:999px;padding:9px 4px;text-align:center;text-decoration:none;color:#2c2724;font-size:12px;font-weight:800;background:#fff}
 .quick a:first-child{background:#191715;color:#fff;border-color:#191715}
 .fact{display:flex;gap:10px;padding:12px 0;border-top:1px solid var(--line);font-size:13px;line-height:1.55}
-.icon{width:22px;flex:none;text-align:center}
-.facttext{min-width:0;word-break:break-word}
-.section{padding:17px 0;border-top:1px solid var(--line)}
-.section h3{margin:0 0 10px;font-size:17px;letter-spacing:-.025em}
+.icon{width:22px;flex:none;text-align:center} .facttext{min-width:0;word-break:break-word}
+.section{padding:17px 0;border-top:1px solid var(--line)} .section h3{margin:0 0 10px;font-size:17px;letter-spacing:-.025em}
 .section p{margin:0;color:#47403b;font-size:13.5px;line-height:1.75}
-.bullets{margin:0;padding-left:20px}
-.bullets li{margin:0 0 8px;font-size:13.5px;line-height:1.6;color:#3f3935}
-.bullets li:last-child{margin-bottom:0}
+.bullets{margin:0;padding-left:20px} .bullets li{margin:0 0 8px;font-size:13.5px;line-height:1.6;color:#3f3935}
 .menu{display:grid;gap:7px}
 .menuitem{display:flex;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:12px;background:#fffaf7;border:1px solid #f0e5de;font-size:13px}
 .menuitem span:last-child{font-weight:800;color:#85583f;white-space:nowrap}
-.emptydetail{height:100%;display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);text-align:center;line-height:1.6}
-.mobilebackdrop{display:none}
+.contributor{margin-top:8px;color:var(--muted);font-size:11px}
 .foot{color:var(--muted);font-size:11px;line-height:1.5;margin:13px 2px}
+.mobilebackdrop{display:none}
+
+/* Add-place modal */
+.modalback{display:none;position:fixed;inset:0;z-index:200;background:rgba(25,18,15,.5);padding:18px;align-items:center;justify-content:center}
+.modalback.show{display:flex}
+.modal{width:min(520px,100%);background:#fff;border-radius:24px;padding:20px;box-shadow:0 20px 70px rgba(0,0,0,.22)}
+.modalhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.modal h2{margin:0;font-size:22px;letter-spacing:-.035em} .modaldesc{font-size:13px;color:var(--muted);line-height:1.55;margin:7px 0 16px}
+.xbtn{border:0;background:var(--soft);width:36px;height:36px;border-radius:50%;font-size:21px;cursor:pointer}
+.field{margin-top:12px} .field label{display:block;font-size:12px;font-weight:800;margin:0 0 6px}
+.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:14px;outline:none;background:#fff}
+.field textarea{min-height:78px;resize:vertical}
+.hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.45}
+.submit{width:100%;border:0;border-radius:13px;margin-top:16px;padding:12px 14px;background:#1f1b18;color:#fff;font-weight:850;cursor:pointer}
+.submit:disabled{opacity:.5;cursor:wait}
+.status{display:none;margin-top:12px;border-radius:12px;padding:11px 12px;font-size:12px;line-height:1.55}
+.status.show{display:block} .status.ok{background:#eaf8ef;color:#16633e} .status.err{background:#fff0f0;color:#9d3030} .status.work{background:#f7f1ed;color:#62534b}
+.setupbanner{display:none;margin:10px 0 0;border:1px dashed #d6c6bc;background:#fff;border-radius:13px;padding:10px 12px;font-size:12px;line-height:1.5;color:#655a53}
+.setupbanner.show{display:block}
 
 @media(max-width:980px){
  .app{display:block;padding:12px}
  .grid{grid-template-columns:1fr}
+ .herorow{align-items:flex-start}
+ .addtop{padding:10px 11px;font-size:12px}
  .rightwrap{position:static}
  .detailpanel{position:fixed;z-index:101;inset:0 0 0 auto;width:min(520px,100%);height:100dvh;border-radius:0;transform:translateX(103%);transition:transform .22s ease;top:0}
  .detailpanel.open{transform:translateX(0)}
- .maphero{border-radius:0;height:220px}
+ .maphero{border-radius:0;height:190px}
  .closemobile{display:block}
  .mobilebackdrop{display:block;position:fixed;inset:0;z-index:100;background:rgba(20,15,12,.45);opacity:0;pointer-events:none;transition:.2s}
  .mobilebackdrop.show{opacity:1;pointer-events:auto}
 }
-@media(min-width:981px) and (max-width:1180px){
- .app{grid-template-columns:minmax(480px,1fr) 420px}
- .grid{grid-template-columns:1fr}
-}
-
-.static-hero{
- display:flex;align-items:flex-end;
- background:
-   radial-gradient(circle at 20% 20%,rgba(255,255,255,.95) 0 7%,transparent 8%),
-   linear-gradient(135deg,#f7e9df,#eadfd6 55%,#ded3cb);
-}
-.hero-place{
- margin:18px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
- border:1px solid rgba(255,255,255,.7);border-radius:16px;padding:12px 14px;
- display:flex;gap:10px;align-items:center;box-shadow:0 8px 25px rgba(65,39,27,.09)
-}
-.hero-pin{font-size:24px}
-.hero-area{font-size:12px;color:#6f655f;font-weight:700}
-.hero-cat{font-size:15px;font-weight:850;margin-top:2px}
-
+@media(min-width:981px) and (max-width:1180px){.app{grid-template-columns:minmax(480px,1fr) 420px} .grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="app">
  <section class="left">
   <div class="hero">
-   <h1>맹구 & 콩콩 오사카 맛집 🍓🥩</h1>
-   <p>가게 이름을 누르면 오른쪽에 평점·리뷰·주소·영업시간·이용객 평가·추천메뉴가 바로 떠.</p>
+   <div class="herorow">
+    <div>
+     <h1>맹구 & 콩콩 오사카 맛집 🍓🥩</h1>
+     <p>가게 이름을 누르면 상세정보. 다른 사람도 Google 지도 링크 하나로 맛집을 추가할 수 있어.</p>
+    </div>
+    <button id="openAdd" class="addtop">＋ 맛집 추가</button>
+   </div>
+   <div id="setupBanner" class="setupbanner">공용 맛집 추가 기능은 아직 서버 연결 전이야. <b>config.js</b>에 Supabase 주소와 공개키를 넣으면 활성화돼.</div>
   </div>
+
   <div class="controls">
    <input id="search" class="search" placeholder="가게명 · 메뉴 · 지역 검색">
    <div id="tabs" class="tabs"></div>
   </div>
   <div class="meta"><span id="count"></span><span>★ Google 평점 높은 순</span></div>
   <main id="grid" class="grid"></main>
-  <div class="foot">※ 이 페이지 자체는 오프라인으로 열려. Google 지도·리뷰는 버튼을 눌렀을 때만 새 창으로 열림. 평점·영업시간·가격은 변동될 수 있어.</div>
+  <div class="foot">※ 새 맛집은 Google Places 정보와 공개 리뷰 요약을 바탕으로 자동 정리돼. AI는 확인되지 않은 메뉴·가격을 만들지 않도록 설정되어 있어.</div>
  </section>
 
  <aside class="rightwrap">
@@ -126,101 +135,218 @@ html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,
 </div>
 <div id="backdrop" class="mobilebackdrop"></div>
 
+<div id="addModal" class="modalback" aria-hidden="true">
+ <div class="modal">
+  <div class="modalhead">
+   <div>
+    <h2>＋ 맛집 추가</h2>
+    <div class="modaldesc">Google Maps에서 가게를 열고 <b>공유 → 링크 복사</b>한 다음 붙여넣으면 돼. 나머지는 자동으로 채워져.</div>
+   </div>
+   <button id="closeAdd" class="xbtn">×</button>
+  </div>
+  <form id="addForm">
+   <div class="field">
+    <label>Google 지도 링크 *</label>
+    <input id="mapsUrl" type="url" required placeholder="https://maps.app.goo.gl/…">
+    <div class="hint">가게 이름·평점·리뷰 수·주소·영업시간·분류를 Google에서 가져와.</div>
+   </div>
+   <div class="field">
+    <label>내 메모 (선택)</label>
+    <textarea id="userNote" maxlength="120" placeholder="예: 콩콩이 딸기파르페 픽 / 엄마랑 가기"></textarea>
+   </div>
+   <div class="field">
+    <label>추가한 사람 (선택)</label>
+    <input id="nickname" maxlength="30" placeholder="예: 맹구 / 콩콩">
+   </div>
+   <button id="submitAdd" class="submit" type="submit">자동으로 찾아서 추가</button>
+   <div id="addStatus" class="status"></div>
+  </form>
+ </div>
+</div>
+
+<script src="./config.js"></script>
 <script>
-const places=[{"area": "숙소 근처", "category": "샌드위치", "name": "GURFA", "rating": 4.7, "reviews": 191, "price": "¥1,000–2,000", "address": "3 Chome-1-2 Nakanoshima, Kita Ward, Osaka 530-0005", "phone": "+81 6-6476-8662", "hours": "11:00–17:00 · 화요일은 방문 전 확인", "summary": "쿠바샌드·핫샌드 중심의 캐주얼 샌드위치숍.", "description": "나카노시마에 있는 샌드위치 전문점. 숙소 근처에서 무겁지 않은 점심이나 브런치를 먹고 싶을 때 넣기 좋은 후보.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 191개.", "샌드위치 전문점으로 1인 약 ¥1,000–2,000대.", "짧은 일정 중 가볍게 식사하기 좋은 타입."], "menus": [["쿠바샌드", "대표 후보"], ["핫샌드", "가벼운 한 끼"]], "query": "GURFA Osaka"}, {"area": "숙소 근처", "category": "카페·브런치", "name": "heys", "rating": 4.6, "reviews": 187, "price": "¥1,000–2,000", "address": "3 Chome-1-2 Nakanoshima, Kita Ward, Osaka 530-0005", "phone": "", "hours": "매일 09:00–17:00", "summary": "커피·팬케이크·브런치를 즐기기 좋은 카페.", "description": "나카노시마의 카페. 팬케이크와 커피, 브런치류를 먹을 수 있고 비교적 일찍 문을 열어 숙소에서 나와 첫 일정 전에 들르기 좋다.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 187개.", "카페·팬케이크 전문점으로 분류되며 글루텐프리 옵션도 표시돼 있음.", "오전 9시부터 영업해 아침 일정에 활용하기 편함."], "menus": [["팬케이크", "브런치"], ["커피", "카페 이용"]], "query": "heys Osaka cafe"}, {"area": "숙소 근처", "category": "베이커리", "name": "Paris-h", "rating": 4.4, "reviews": 736, "price": "¥1,000–2,000", "address": "3 Chome-6-32 Nakanoshima, Kita Ward, Osaka 530-0005", "phone": "+81 6-6479-3577", "hours": "수–금 11:00–19:00 / 토 11:00–18:00", "summary": "오사카에서 이름난 프렌치 계열 베이커리.", "description": "나카노시마의 인기 베이커리. 페이스트리부터 식사빵까지 다양한 빵을 고르는 재미가 있어 빵 자체를 목적으로 들르기 좋은 곳.", "highlights": ["Google 이용객 평점 4.4/5, 리뷰 736개.", "제과점·베이커리로 리뷰 수가 많은 편.", "영업일이 제한적이라 일정과 요일을 맞추는 게 중요."], "menus": [["페이스트리", "추천"], ["식사빵", "다양한 종류"]], "query": "Paris-h Osaka bakery"}, {"area": "숙소 근처", "category": "일식·텐푸라", "name": "요타로 본점", "rating": 4.5, "reviews": 144, "price": "코스별 상이", "address": "中之島ダイビル 3F, 3-3-23 Nakanoshima, Kita Ward, Osaka", "phone": "+81 6-6147-2313", "hours": "11:30–14:30 / 17:30–21:30 · 일요일 휴무", "summary": "1927년 창업. 텐푸라와 명물 도미밥으로 알려진 일식집.", "description": "1927년부터 이어온 나카노시마의 텐푸라 전문점. 계절 식재료를 재료별로 맞춰 튀겨 내며 카운터에서는 갓 튀긴 텐푸라를 바로 즐길 수 있다. 방문은 전날까지 예약제로 안내되고 있다.", "highlights": ["Google 이용객 평점 4.5/5, 리뷰 144개.", "계절 식재료와 장인의 튀김 기술을 강조하는 전통 텐푸라 전문점.", "카운터·테이블·개인실이 있어 차분한 식사나 기념일에도 어울림."], "menus": [["텐푸라 코스", "대표"], ["도미밥", "명물"]], "query": "与太呂 本店 大阪"}, {"area": "숙소 근처", "category": "이자카야·일식", "name": "上方ごちそう処 贔屓屋 中之島ダイビル店", "rating": 4.6, "reviews": 268, "price": "런치 ¥501–1,000 / 디너 약 ¥3,001–4,000", "address": "中之島ダイビル 3F, 3-3-23 Nakanoshima, Kita Ward, Osaka", "phone": "+81 6-6443-8605", "hours": "월–토 11:00–14:00 / 16:00–23:00 · 일·공휴일 휴무", "summary": "회·튀김·구이 등 일본요리를 폭넓게 먹는 대형 이자카야.", "description": "사시미, 튀김, 스시, 전골 등 여러 일본요리를 한 자리에서 골라 먹기 좋은 곳. 좌석 수가 많고 개인실도 있어 여러 명이 함께 이용하기 편하다.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 268개.", "사시미 모둠과 갓 튀긴 텐푸라가 대표 메뉴로 소개됨.", "개인실과 단체 좌석이 있어 가족·친구·회식 이용이 많은 타입."], "menus": [["사시미 7종 모둠", "¥2,739"], ["새우·붕장어 텐푸라", "¥1,419"], ["2천베로 세트", "¥2,000"]], "query": "上方ごちそう処 贔屓屋 中之島ダイビル店"}, {"area": "숙소 근처", "category": "일본식 양식", "name": "Lumiere", "rating": 4.4, "reviews": 206, "price": "¥1,000–2,000", "address": "N4.TOWER 1F, 4-3-20 Nakanoshima, Kita Ward, Osaka", "phone": "+81 6-6449-9600", "hours": "런치 11:00–14:00 전후 · 디너는 방문 전 확인", "summary": "수제 햄버그 등 일본식 양식과 프렌치 감성의 메뉴.", "description": "나카노시마 N4.TOWER 1층의 레스토랑. 부담 없는 가격대의 일본식 양식 메뉴를 중심으로, 차분한 분위기에서 식사하기 좋은 곳.", "highlights": ["Google 이용객 평점 4.4/5, 리뷰 206개.", "일본식 양식 레스토랑으로 ¥1,000–2,000대 가격대가 표시돼 있음.", "숙소 근처에서 햄버그 같은 익숙한 고기 메뉴가 당길 때 좋은 후보."], "menus": [["수제 햄버그", "대표 후보"], ["양식 런치", "점심"]], "query": "Lumiere N4 Tower Osaka"}, {"area": "숙소 근처", "category": "철판주점", "name": "鉄板酒場 粋酔", "rating": 4.7, "reviews": 44, "price": "메뉴별 상이", "address": "1-1-32 Tosabori, Nishi Ward, Osaka 550-0001", "phone": "+81 6-6131-6637", "hours": "평일 런치 11:30–14:00 / 디너 17:30–24:00", "summary": "고기·호르몬을 술과 함께 즐기는 캐주얼 철판주점.", "description": "정통 코스형 철판구이보다 여러 철판요리를 편하게 시켜 술과 곁들이는 타입. 숙소 근처에서 늦은 저녁을 캐주얼하게 먹기 좋다.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 44개.", "철판구이·야키니쿠·호르몬 전문 카테고리로 등록.", "자정 무렵까지 영업해 늦은 식사 후보로 활용 가능."], "menus": [["철판 고기", "대표"], ["호르몬", "안주"]], "query": "鉄板酒場 粋酔 大阪"}, {"area": "숙소 근처", "category": "철판구이·스테이크", "name": "테판야키 타이엔", "rating": 4.7, "reviews": 131, "price": "런치 ¥3,000~ / 디너 ¥9,000~", "address": "アレス肥後橋ビル B1F, 1-1-7 Tosabori, Nishi Ward, Osaka", "phone": "+81 6-6467-8235", "hours": "월–토 11:30–14:30 / 17:30–23:00 · 일요일 휴무", "summary": "프렌치 출신 셰프의 와규·해산물 철판구이.", "description": "‘철판구이를 친근하게’라는 콘셉트로 프렌치 출신 셰프가 고기, 계약농가 채소, 제철 해산물을 철판에서 조리한다. 카운터와 반개인실이 있어 캐주얼한 식사부터 기념일까지 대응한다.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 131개.", "프렌치 출신 셰프와 엄선 고기·계절 해산물이 특징.", "런치 ¥3,000에 오마르새우+해산물을 추가하는 ¥4,700 구성이 특히 매력적."], "menus": [["타이엔 런치", "¥3,000"], ["오마르새우+해산물 추가", "+¥1,700"], ["런치+해산물 7품", "¥4,700"], ["와규+오마르새우 디너", "¥11,000"]], "query": "鉄板焼き 太縁 大阪"}, {"area": "숙소 근처", "category": "야키토리·가마메시", "name": "쿠치부네", "rating": 4.8, "reviews": 192, "price": "약 ¥3,000–4,000", "address": "1-14-1 Edobori, Nishi Ward, Osaka 550-0002", "phone": "+81 6-6616-8940", "hours": "매일 17:00–04:00", "summary": "야키토리와 여러 종류의 가마메시를 함께 즐기는 곳.", "description": "꼬치구이와 솥밥을 같이 먹는 저녁형 식당. 새우 가마메시를 포함한 다양한 솥밥 메뉴가 있고 새벽까지 영업해 늦은 저녁에도 편하다.", "highlights": ["Google 이용객 평점 4.8/5, 리뷰 192개.", "야키토리와 가마메시를 함께 먹을 수 있는 조합이 특징.", "17시부터 새벽 4시까지 영업해 일정 후 늦게 방문하기 좋음."], "menus": [["유자향 새우 가마메시", "약 ¥2,068"], ["와규 스키야키 가마메시", "약 ¥2,178"], ["야키토리", "대표"]], "query": "焼鳥と釜めし くちぶね 大阪"}, {"area": "숙소 근처", "category": "라멘·마제소바", "name": "MAREN Higobashi", "rating": 4.8, "reviews": 1557, "price": "¥1,000–2,000", "address": "1-15-7 Edobori, Nishi Ward, Osaka 550-0002", "phone": "+81 6-6485-8003", "hours": "매일 10:30–22:00", "summary": "일식집 감성을 살린 마제소바·라멘 전문점.", "description": "히고바시역 9번 출구 바로 근처의 면 전문점. ‘일식집이 만드는 마제소바’를 내세우며 카운터 중심의 차분한 공간에서 빠르게 한 끼 하기 좋다.", "highlights": ["Google 이용객 평점 4.8/5, 리뷰 1,557개.", "마제소바와 닭·해산물 계열 라멘이 중심.", "역에서 가깝고 매일 22시까지 영업해 일정 중 넣기 쉬움."], "menus": [["차슈 간장 마제소바+미니밥", "¥1,200"], ["차슈 닭소금 마제소바+미니밥", "¥1,200"], ["닭소금 마제소바+미니밥", "약 ¥930"]], "query": "MAREN 肥後橋"}, {"area": "우메다", "category": "쇼콜라·카페", "name": "쇼콜라티에 팔레 도르 오사카점", "rating": 4.4, "reviews": 532, "price": "카페 약 ¥1,000–2,000", "address": "ハービスPLAZA ENT 4F, 2-2-22 Umeda, Kita Ward, Osaka", "phone": "+81 6-6341-8081", "hours": "매일 11:00–20:00 · 시설 휴무일에 따름", "summary": "빈투바 쇼콜라와 계절 파르페로 유명한 디저트 살롱.", "description": "하비스 PLAZA ENT 4층의 쇼콜라 전문점. 카카오 원료부터 다루는 초콜릿 전문성이 강하고, 초콜릿·케이크뿐 아니라 계절 파르페를 앉아서 즐길 수 있다.", "highlights": ["Google 이용객 평점 4.4/5, 리뷰 532개.", "식베로그 ‘스위츠 WEST 백명점 2026’ 선정.", "우메다에서 초콜릿을 주인공으로 한 고급 디저트를 먹고 싶을 때 강한 후보."], "menus": [["계절 파르페", "대표"], ["쇼콜라·봉봉", "전문"], ["케이크", "카페"]], "query": "ショコラティエ パレ ド オール 大阪"}, {"area": "혼마치·요도야바시", "category": "과일카페·파르페", "name": "Fruit Cafe Hikari", "rating": 4.6, "reviews": 481, "price": "¥2,000–3,000", "address": "アーバンネット御堂筋ビル 1F, 4-2-13 Awajimachi, Chuo Ward, Osaka", "phone": "", "hours": "매일 08:00–22:00", "summary": "제철 과일을 듬뿍 올리는 파르페 중심 과일카페.", "description": "과일 자체가 주인공인 파르페를 먹기 좋은 카페. 딸기 시즌에는 딸기 비중이 큰 파르페가 특히 눈에 띄어 이번 여행에서 콩콩이 디저트 최우선 후보로 저장한 곳.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 481개.", "과일카페로 1인 약 ¥2,000–3,000대.", "오전 8시부터 밤 10시까지 영업해 일정에 넣기 편함."], "menus": [["제철 과일 파르페", "대표"], ["딸기 파르페", "시즌 추천"]], "query": "Fruit Cafe Hikari Osaka"}, {"area": "신사이바시", "category": "크레페·디저트", "name": "타바네노시 오사카 신사이바시점", "rating": 4.7, "reviews": 822, "price": "¥1,000–2,000", "address": "1-6-34 Nishishinsaibashi, Chuo Ward, Osaka 542-0086", "phone": "+81 6-4400-6726", "hours": "평일 11:30–21:30 / 토 11:00–21:30 / 일 10:00–21:30", "summary": "말차를 중심으로 비주얼이 강한 일본식 크레페 전문점.", "description": "말차와 일본식 재료를 활용한 ‘와 크레페’를 즐기는 곳. 신사이바시역에서 가깝고 디저트 자체의 비주얼이 좋아 쇼핑 중 간식 코스로 넣기 좋다.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 822개.", "크레페·카페·차 전문 카테고리로 등록.", "말차 계열과 시즌 과일 크레페를 보기 좋은 곳."], "menus": [["가케가와 말차 브륄레", "약 ¥990"], ["말차 크레페", "대표"], ["딸기 계열", "시즌 확인"]], "query": "浅草茶屋 たばねのし 大阪心斎橋店"}, {"area": "신사이바시", "category": "디저트카페", "name": "COLONY by EQI Shinsaibashi", "rating": 4.8, "reviews": 4918, "price": "메뉴별 상이", "address": "OCEAN DRIVE314 1F-A, 2-12-14 Nishishinsaibashi, Chuo Ward, Osaka", "phone": "+81 6-6224-0061", "hours": "매일 11:00–23:00", "summary": "케이크·팬케이크·딸기 디저트 선택지가 많은 카페.", "description": "아메리카무라 쪽의 디저트 카페. 케이크와 팬케이크 등 선택지가 많고 밤 11시까지 영업해 신사이바시 일정이 끝난 뒤에도 디저트를 먹기 좋다.", "highlights": ["Google 이용객 평점 4.8/5, 리뷰 4,918개.", "카페·디저트 전문점으로 리뷰 수가 매우 많은 편.", "늦은 시간까지 열어 쇼핑 뒤 디저트 코스로 활용하기 편함."], "menus": [["딸기 케이크", "추천"], ["팬케이크", "대표 계열"], ["각종 디저트", "선택 폭 넓음"]], "query": "COLONY by EQI Shinsaibashi Amemura"}, {"area": "신사이바시", "category": "고베규·철판구이", "name": "와노미야 북신사이바시점", "rating": 4.9, "reviews": 894, "price": "부위·코스별 상이", "address": "心斎橋元村ビル 1F, 3-8-11 Minamisenba, Chuo Ward, Osaka", "phone": "+81 6-6244-3929", "hours": "매일 11:00–23:00", "summary": "고베규 스테이크와 철판구이를 메인으로 하는 고기집.", "description": "신사이바시에서 고베규를 확실하게 먹고 싶을 때 넣어둔 후보. 점심부터 밤까지 영업해 쇼핑 일정 앞뒤로 배치하기 쉽다.", "highlights": ["Google 이용객 평점 4.9/5, 리뷰 894개.", "철판구이·스테이크 전문점으로 등록.", "고기 중심의 한 끼나 데이트 식사 후보로 적합."], "menus": [["고베규 스테이크", "대표"], ["철판구이 코스", "메인"]], "query": "わの宮 北心斎橋店"}, {"area": "신사이바시", "category": "규카츠", "name": "규카츠 요사쿠라 나가호리바시점", "rating": 5.0, "reviews": 2003, "price": "메뉴별 상이", "address": "1-3-13 Higashishinsaibashi, Chuo Ward, Osaka 542-0083", "phone": "+81 6-6755-8893", "hours": "영업시간 표기가 변동되어 지도에서 최신 확인 권장", "summary": "평점과 리뷰 수가 눈에 띄는 규카츠 전문점.", "description": "나가호리바시·신사이바시 권역의 규카츠 전문점. 스테이크보다 캐주얼하게 고기를 먹고 싶으면서도 규카츠 특유의 바삭한 튀김옷과 고기 식감을 즐기고 싶을 때 후보.", "highlights": ["Google 이용객 평점 5.0/5, 리뷰 2,003개.", "일본식 규카츠를 메인으로 하는 식당.", "현재 영업시간 표기가 특이하게 노출돼 방문 전 지도에서 재확인하는 게 좋음."], "menus": [["규카츠", "대표"], ["규카츠 정식", "식사"]], "query": "牛カツ 夜桜 長堀橋 大阪"}, {"area": "신사이바시", "category": "일본식 카레", "name": "Kusaka Curry", "rating": 4.6, "reviews": 489, "price": "런치 약 ¥1,000–2,000", "address": "105, 3-11-27 Minamisenba, Chuo Ward, Osaka 542-0081", "phone": "+81 6-6282-7887", "hours": "수요일 휴무 · 시간은 방문 전 확인", "summary": "진한 풍미의 일본식 카레 전문점.", "description": "신사이바시·미나미센바 쪽 카레 전문점. 긴 코스보다 빠르고 확실하게 한 접시로 한 끼 먹고 싶을 때 넣기 좋은 후보.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 489개.", "카레·일본식 양식 전문 카테고리.", "식베로그에서도 카레 전문점으로 리뷰와 저장 수가 많은 편."], "menus": [["일본식 카레", "대표"], ["토핑 카레", "취향대로"]], "query": "クサカカレー 本店 大阪"}, {"area": "신사이바시", "category": "몬자야키", "name": "츠키시마 몬자 오코게 신사이바시", "rating": 4.9, "reviews": 6984, "price": "약 ¥2,000–4,000", "address": "3-11-1 Minamisenba, Chuo Ward, Osaka 542-0081", "phone": "+81 6-6926-8649", "hours": "매일 11:00–23:00", "summary": "명란·해산물 등 다양한 몬자를 철판에서 즐기는 전문점.", "description": "신사이바시역에서 가까운 몬자야키 전문점. 158석 규모에 개인실도 있고, 여럿이 철판을 둘러앉아 메뉴를 나눠 먹는 재미가 있다.", "highlights": ["Google 이용객 평점 4.9/5, 리뷰 6,984개.", "몬자야키·오코노미야키·이자카야 카테고리.", "매일 23시까지 영업하며 좌석 규모가 큰 편."], "menus": [["명란 몬자", "인기 계열"], ["해산물 몬자", "추천"], ["철판 사이드", "함께 주문"]], "query": "月島もんじゃ おこげ 心斎橋"}];
-const areas=["전체","숙소 근처","우메다","혼마치·요도야바시","신사이바시"];
+const staticPlaces=[{"area": "숙소 근처", "category": "샌드위치", "name": "GURFA", "rating": 4.7, "reviews": 191, "price": "¥1,000–2,000", "address": "3 Chome-1-2 Nakanoshima, Kita Ward, Osaka 530-0005", "phone": "+81 6-6476-8662", "hours": "11:00–17:00 · 화요일은 방문 전 확인", "summary": "쿠바샌드·핫샌드 중심의 캐주얼 샌드위치숍.", "description": "나카노시마에 있는 샌드위치 전문점. 숙소 근처에서 무겁지 않은 점심이나 브런치를 먹고 싶을 때 넣기 좋은 후보.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 191개.", "샌드위치 전문점으로 1인 약 ¥1,000–2,000대.", "짧은 일정 중 가볍게 식사하기 좋은 타입."], "menus": [["쿠바샌드", "대표 후보"], ["핫샌드", "가벼운 한 끼"]], "query": "GURFA Osaka"}, {"area": "숙소 근처", "category": "카페·브런치", "name": "heys", "rating": 4.6, "reviews": 187, "price": "¥1,000–2,000", "address": "3 Chome-1-2 Nakanoshima, Kita Ward, Osaka 530-0005", "phone": "", "hours": "매일 09:00–17:00", "summary": "커피·팬케이크·브런치를 즐기기 좋은 카페.", "description": "나카노시마의 카페. 팬케이크와 커피, 브런치류를 먹을 수 있고 비교적 일찍 문을 열어 숙소에서 나와 첫 일정 전에 들르기 좋다.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 187개.", "카페·팬케이크 전문점으로 분류되며 글루텐프리 옵션도 표시돼 있음.", "오전 9시부터 영업해 아침 일정에 활용하기 편함."], "menus": [["팬케이크", "브런치"], ["커피", "카페 이용"]], "query": "heys Osaka cafe"}, {"area": "숙소 근처", "category": "베이커리", "name": "Paris-h", "rating": 4.4, "reviews": 736, "price": "¥1,000–2,000", "address": "3 Chome-6-32 Nakanoshima, Kita Ward, Osaka 530-0005", "phone": "+81 6-6479-3577", "hours": "수–금 11:00–19:00 / 토 11:00–18:00", "summary": "오사카에서 이름난 프렌치 계열 베이커리.", "description": "나카노시마의 인기 베이커리. 페이스트리부터 식사빵까지 다양한 빵을 고르는 재미가 있어 빵 자체를 목적으로 들르기 좋은 곳.", "highlights": ["Google 이용객 평점 4.4/5, 리뷰 736개.", "제과점·베이커리로 리뷰 수가 많은 편.", "영업일이 제한적이라 일정과 요일을 맞추는 게 중요."], "menus": [["페이스트리", "추천"], ["식사빵", "다양한 종류"]], "query": "Paris-h Osaka bakery"}, {"area": "숙소 근처", "category": "일식·텐푸라", "name": "요타로 본점", "rating": 4.5, "reviews": 144, "price": "코스별 상이", "address": "中之島ダイビル 3F, 3-3-23 Nakanoshima, Kita Ward, Osaka", "phone": "+81 6-6147-2313", "hours": "11:30–14:30 / 17:30–21:30 · 일요일 휴무", "summary": "1927년 창업. 텐푸라와 명물 도미밥으로 알려진 일식집.", "description": "1927년부터 이어온 나카노시마의 텐푸라 전문점. 계절 식재료를 재료별로 맞춰 튀겨 내며 카운터에서는 갓 튀긴 텐푸라를 바로 즐길 수 있다. 방문은 전날까지 예약제로 안내되고 있다.", "highlights": ["Google 이용객 평점 4.5/5, 리뷰 144개.", "계절 식재료와 장인의 튀김 기술을 강조하는 전통 텐푸라 전문점.", "카운터·테이블·개인실이 있어 차분한 식사나 기념일에도 어울림."], "menus": [["텐푸라 코스", "대표"], ["도미밥", "명물"]], "query": "与太呂 本店 大阪"}, {"area": "숙소 근처", "category": "이자카야·일식", "name": "上方ごちそう処 贔屓屋 中之島ダイビル店", "rating": 4.6, "reviews": 268, "price": "런치 ¥501–1,000 / 디너 약 ¥3,001–4,000", "address": "中之島ダイビル 3F, 3-3-23 Nakanoshima, Kita Ward, Osaka", "phone": "+81 6-6443-8605", "hours": "월–토 11:00–14:00 / 16:00–23:00 · 일·공휴일 휴무", "summary": "회·튀김·구이 등 일본요리를 폭넓게 먹는 대형 이자카야.", "description": "사시미, 튀김, 스시, 전골 등 여러 일본요리를 한 자리에서 골라 먹기 좋은 곳. 좌석 수가 많고 개인실도 있어 여러 명이 함께 이용하기 편하다.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 268개.", "사시미 모둠과 갓 튀긴 텐푸라가 대표 메뉴로 소개됨.", "개인실과 단체 좌석이 있어 가족·친구·회식 이용이 많은 타입."], "menus": [["사시미 7종 모둠", "¥2,739"], ["새우·붕장어 텐푸라", "¥1,419"], ["2천베로 세트", "¥2,000"]], "query": "上方ごちそう処 贔屓屋 中之島ダイビル店"}, {"area": "숙소 근처", "category": "일본식 양식", "name": "Lumiere", "rating": 4.4, "reviews": 206, "price": "¥1,000–2,000", "address": "N4.TOWER 1F, 4-3-20 Nakanoshima, Kita Ward, Osaka", "phone": "+81 6-6449-9600", "hours": "런치 11:00–14:00 전후 · 디너는 방문 전 확인", "summary": "수제 햄버그 등 일본식 양식과 프렌치 감성의 메뉴.", "description": "나카노시마 N4.TOWER 1층의 레스토랑. 부담 없는 가격대의 일본식 양식 메뉴를 중심으로, 차분한 분위기에서 식사하기 좋은 곳.", "highlights": ["Google 이용객 평점 4.4/5, 리뷰 206개.", "일본식 양식 레스토랑으로 ¥1,000–2,000대 가격대가 표시돼 있음.", "숙소 근처에서 햄버그 같은 익숙한 고기 메뉴가 당길 때 좋은 후보."], "menus": [["수제 햄버그", "대표 후보"], ["양식 런치", "점심"]], "query": "Lumiere N4 Tower Osaka"}, {"area": "숙소 근처", "category": "철판주점", "name": "鉄板酒場 粋酔", "rating": 4.7, "reviews": 44, "price": "메뉴별 상이", "address": "1-1-32 Tosabori, Nishi Ward, Osaka 550-0001", "phone": "+81 6-6131-6637", "hours": "평일 런치 11:30–14:00 / 디너 17:30–24:00", "summary": "고기·호르몬을 술과 함께 즐기는 캐주얼 철판주점.", "description": "정통 코스형 철판구이보다 여러 철판요리를 편하게 시켜 술과 곁들이는 타입. 숙소 근처에서 늦은 저녁을 캐주얼하게 먹기 좋다.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 44개.", "철판구이·야키니쿠·호르몬 전문 카테고리로 등록.", "자정 무렵까지 영업해 늦은 식사 후보로 활용 가능."], "menus": [["철판 고기", "대표"], ["호르몬", "안주"]], "query": "鉄板酒場 粋酔 大阪"}, {"area": "숙소 근처", "category": "철판구이·스테이크", "name": "테판야키 타이엔", "rating": 4.7, "reviews": 131, "price": "런치 ¥3,000~ / 디너 ¥9,000~", "address": "アレス肥後橋ビル B1F, 1-1-7 Tosabori, Nishi Ward, Osaka", "phone": "+81 6-6467-8235", "hours": "월–토 11:30–14:30 / 17:30–23:00 · 일요일 휴무", "summary": "프렌치 출신 셰프의 와규·해산물 철판구이.", "description": "‘철판구이를 친근하게’라는 콘셉트로 프렌치 출신 셰프가 고기, 계약농가 채소, 제철 해산물을 철판에서 조리한다. 카운터와 반개인실이 있어 캐주얼한 식사부터 기념일까지 대응한다.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 131개.", "프렌치 출신 셰프와 엄선 고기·계절 해산물이 특징.", "런치 ¥3,000에 오마르새우+해산물을 추가하는 ¥4,700 구성이 특히 매력적."], "menus": [["타이엔 런치", "¥3,000"], ["오마르새우+해산물 추가", "+¥1,700"], ["런치+해산물 7품", "¥4,700"], ["와규+오마르새우 디너", "¥11,000"]], "query": "鉄板焼き 太縁 大阪"}, {"area": "숙소 근처", "category": "야키토리·가마메시", "name": "쿠치부네", "rating": 4.8, "reviews": 192, "price": "약 ¥3,000–4,000", "address": "1-14-1 Edobori, Nishi Ward, Osaka 550-0002", "phone": "+81 6-6616-8940", "hours": "매일 17:00–04:00", "summary": "야키토리와 여러 종류의 가마메시를 함께 즐기는 곳.", "description": "꼬치구이와 솥밥을 같이 먹는 저녁형 식당. 새우 가마메시를 포함한 다양한 솥밥 메뉴가 있고 새벽까지 영업해 늦은 저녁에도 편하다.", "highlights": ["Google 이용객 평점 4.8/5, 리뷰 192개.", "야키토리와 가마메시를 함께 먹을 수 있는 조합이 특징.", "17시부터 새벽 4시까지 영업해 일정 후 늦게 방문하기 좋음."], "menus": [["유자향 새우 가마메시", "약 ¥2,068"], ["와규 스키야키 가마메시", "약 ¥2,178"], ["야키토리", "대표"]], "query": "焼鳥と釜めし くちぶね 大阪"}, {"area": "숙소 근처", "category": "라멘·마제소바", "name": "MAREN Higobashi", "rating": 4.8, "reviews": 1557, "price": "¥1,000–2,000", "address": "1-15-7 Edobori, Nishi Ward, Osaka 550-0002", "phone": "+81 6-6485-8003", "hours": "매일 10:30–22:00", "summary": "일식집 감성을 살린 마제소바·라멘 전문점.", "description": "히고바시역 9번 출구 바로 근처의 면 전문점. ‘일식집이 만드는 마제소바’를 내세우며 카운터 중심의 차분한 공간에서 빠르게 한 끼 하기 좋다.", "highlights": ["Google 이용객 평점 4.8/5, 리뷰 1,557개.", "마제소바와 닭·해산물 계열 라멘이 중심.", "역에서 가깝고 매일 22시까지 영업해 일정 중 넣기 쉬움."], "menus": [["차슈 간장 마제소바+미니밥", "¥1,200"], ["차슈 닭소금 마제소바+미니밥", "¥1,200"], ["닭소금 마제소바+미니밥", "약 ¥930"]], "query": "MAREN 肥後橋"}, {"area": "우메다", "category": "쇼콜라·카페", "name": "쇼콜라티에 팔레 도르 오사카점", "rating": 4.4, "reviews": 532, "price": "카페 약 ¥1,000–2,000", "address": "ハービスPLAZA ENT 4F, 2-2-22 Umeda, Kita Ward, Osaka", "phone": "+81 6-6341-8081", "hours": "매일 11:00–20:00 · 시설 휴무일에 따름", "summary": "빈투바 쇼콜라와 계절 파르페로 유명한 디저트 살롱.", "description": "하비스 PLAZA ENT 4층의 쇼콜라 전문점. 카카오 원료부터 다루는 초콜릿 전문성이 강하고, 초콜릿·케이크뿐 아니라 계절 파르페를 앉아서 즐길 수 있다.", "highlights": ["Google 이용객 평점 4.4/5, 리뷰 532개.", "식베로그 ‘스위츠 WEST 백명점 2026’ 선정.", "우메다에서 초콜릿을 주인공으로 한 고급 디저트를 먹고 싶을 때 강한 후보."], "menus": [["계절 파르페", "대표"], ["쇼콜라·봉봉", "전문"], ["케이크", "카페"]], "query": "ショコラティエ パレ ド オール 大阪"}, {"area": "혼마치·요도야바시", "category": "과일카페·파르페", "name": "Fruit Cafe Hikari", "rating": 4.6, "reviews": 481, "price": "¥2,000–3,000", "address": "アーバンネット御堂筋ビル 1F, 4-2-13 Awajimachi, Chuo Ward, Osaka", "phone": "", "hours": "매일 08:00–22:00", "summary": "제철 과일을 듬뿍 올리는 파르페 중심 과일카페.", "description": "과일 자체가 주인공인 파르페를 먹기 좋은 카페. 딸기 시즌에는 딸기 비중이 큰 파르페가 특히 눈에 띄어 이번 여행에서 콩콩이 디저트 최우선 후보로 저장한 곳.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 481개.", "과일카페로 1인 약 ¥2,000–3,000대.", "오전 8시부터 밤 10시까지 영업해 일정에 넣기 편함."], "menus": [["제철 과일 파르페", "대표"], ["딸기 파르페", "시즌 추천"]], "query": "Fruit Cafe Hikari Osaka"}, {"area": "신사이바시", "category": "크레페·디저트", "name": "타바네노시 오사카 신사이바시점", "rating": 4.7, "reviews": 822, "price": "¥1,000–2,000", "address": "1-6-34 Nishishinsaibashi, Chuo Ward, Osaka 542-0086", "phone": "+81 6-4400-6726", "hours": "평일 11:30–21:30 / 토 11:00–21:30 / 일 10:00–21:30", "summary": "말차를 중심으로 비주얼이 강한 일본식 크레페 전문점.", "description": "말차와 일본식 재료를 활용한 ‘와 크레페’를 즐기는 곳. 신사이바시역에서 가깝고 디저트 자체의 비주얼이 좋아 쇼핑 중 간식 코스로 넣기 좋다.", "highlights": ["Google 이용객 평점 4.7/5, 리뷰 822개.", "크레페·카페·차 전문 카테고리로 등록.", "말차 계열과 시즌 과일 크레페를 보기 좋은 곳."], "menus": [["가케가와 말차 브륄레", "약 ¥990"], ["말차 크레페", "대표"], ["딸기 계열", "시즌 확인"]], "query": "浅草茶屋 たばねのし 大阪心斎橋店"}, {"area": "신사이바시", "category": "디저트카페", "name": "COLONY by EQI Shinsaibashi", "rating": 4.8, "reviews": 4918, "price": "메뉴별 상이", "address": "OCEAN DRIVE314 1F-A, 2-12-14 Nishishinsaibashi, Chuo Ward, Osaka", "phone": "+81 6-6224-0061", "hours": "매일 11:00–23:00", "summary": "케이크·팬케이크·딸기 디저트 선택지가 많은 카페.", "description": "아메리카무라 쪽의 디저트 카페. 케이크와 팬케이크 등 선택지가 많고 밤 11시까지 영업해 신사이바시 일정이 끝난 뒤에도 디저트를 먹기 좋다.", "highlights": ["Google 이용객 평점 4.8/5, 리뷰 4,918개.", "카페·디저트 전문점으로 리뷰 수가 매우 많은 편.", "늦은 시간까지 열어 쇼핑 뒤 디저트 코스로 활용하기 편함."], "menus": [["딸기 케이크", "추천"], ["팬케이크", "대표 계열"], ["각종 디저트", "선택 폭 넓음"]], "query": "COLONY by EQI Shinsaibashi Amemura"}, {"area": "신사이바시", "category": "고베규·철판구이", "name": "와노미야 북신사이바시점", "rating": 4.9, "reviews": 894, "price": "부위·코스별 상이", "address": "心斎橋元村ビル 1F, 3-8-11 Minamisenba, Chuo Ward, Osaka", "phone": "+81 6-6244-3929", "hours": "매일 11:00–23:00", "summary": "고베규 스테이크와 철판구이를 메인으로 하는 고기집.", "description": "신사이바시에서 고베규를 확실하게 먹고 싶을 때 넣어둔 후보. 점심부터 밤까지 영업해 쇼핑 일정 앞뒤로 배치하기 쉽다.", "highlights": ["Google 이용객 평점 4.9/5, 리뷰 894개.", "철판구이·스테이크 전문점으로 등록.", "고기 중심의 한 끼나 데이트 식사 후보로 적합."], "menus": [["고베규 스테이크", "대표"], ["철판구이 코스", "메인"]], "query": "わの宮 北心斎橋店"}, {"area": "신사이바시", "category": "규카츠", "name": "규카츠 요사쿠라 나가호리바시점", "rating": 5.0, "reviews": 2003, "price": "메뉴별 상이", "address": "1-3-13 Higashishinsaibashi, Chuo Ward, Osaka 542-0083", "phone": "+81 6-6755-8893", "hours": "영업시간 표기가 변동되어 지도에서 최신 확인 권장", "summary": "평점과 리뷰 수가 눈에 띄는 규카츠 전문점.", "description": "나가호리바시·신사이바시 권역의 규카츠 전문점. 스테이크보다 캐주얼하게 고기를 먹고 싶으면서도 규카츠 특유의 바삭한 튀김옷과 고기 식감을 즐기고 싶을 때 후보.", "highlights": ["Google 이용객 평점 5.0/5, 리뷰 2,003개.", "일본식 규카츠를 메인으로 하는 식당.", "현재 영업시간 표기가 특이하게 노출돼 방문 전 지도에서 재확인하는 게 좋음."], "menus": [["규카츠", "대표"], ["규카츠 정식", "식사"]], "query": "牛カツ 夜桜 長堀橋 大阪"}, {"area": "신사이바시", "category": "일본식 카레", "name": "Kusaka Curry", "rating": 4.6, "reviews": 489, "price": "런치 약 ¥1,000–2,000", "address": "105, 3-11-27 Minamisenba, Chuo Ward, Osaka 542-0081", "phone": "+81 6-6282-7887", "hours": "수요일 휴무 · 시간은 방문 전 확인", "summary": "진한 풍미의 일본식 카레 전문점.", "description": "신사이바시·미나미센바 쪽 카레 전문점. 긴 코스보다 빠르고 확실하게 한 접시로 한 끼 먹고 싶을 때 넣기 좋은 후보.", "highlights": ["Google 이용객 평점 4.6/5, 리뷰 489개.", "카레·일본식 양식 전문 카테고리.", "식베로그에서도 카레 전문점으로 리뷰와 저장 수가 많은 편."], "menus": [["일본식 카레", "대표"], ["토핑 카레", "취향대로"]], "query": "クサカカレー 本店 大阪"}, {"area": "신사이바시", "category": "몬자야키", "name": "츠키시마 몬자 오코게 신사이바시", "rating": 4.9, "reviews": 6984, "price": "약 ¥2,000–4,000", "address": "3-11-1 Minamisenba, Chuo Ward, Osaka 542-0081", "phone": "+81 6-6926-8649", "hours": "매일 11:00–23:00", "summary": "명란·해산물 등 다양한 몬자를 철판에서 즐기는 전문점.", "description": "신사이바시역에서 가까운 몬자야키 전문점. 158석 규모에 개인실도 있고, 여럿이 철판을 둘러앉아 메뉴를 나눠 먹는 재미가 있다.", "highlights": ["Google 이용객 평점 4.9/5, 리뷰 6,984개.", "몬자야키·오코노미야키·이자카야 카테고리.", "매일 23시까지 영업하며 좌석 규모가 큰 편."], "menus": [["명란 몬자", "인기 계열"], ["해산물 몬자", "추천"], ["철판 사이드", "함께 주문"]], "query": "月島もんじゃ おこげ 心斎橋"}];
+let communityPlaces=[];
+let places=[...staticPlaces];
+const fixedAreas=["전체","숙소 근처","우메다","혼마치·요도야바시","신사이바시","기타"];
 let filter="전체", q="", current=0;
+
 const grid=document.getElementById("grid"), tabs=document.getElementById("tabs"), search=document.getElementById("search"), count=document.getElementById("count");
 const panel=document.getElementById("detailpanel"), content=document.getElementById("detailcontent"), backdrop=document.getElementById("backdrop");
+const addModal=document.getElementById("addModal"), addStatus=document.getElementById("addStatus"), submitAdd=document.getElementById("submitAdd");
+
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const maps=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
-const googleReviews=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
-const tel=p=>p.phone ? "tel:"+p.phone.replace(/\s/g,"") : maps(p.query);
+const tel=p=>p.phone ? "tel:"+String(p.phone).replace(/\s/g,"") : (p.maps_url||maps(p.query||p.name));
+const config=window.OSAKA_CONFIG||{};
+const configured=Boolean(config.SUPABASE_URL && config.SUPABASE_PUBLISHABLE_KEY && !String(config.SUPABASE_URL).includes("YOUR_"));
+
+function publicHeaders(){
+ return {
+  "apikey":config.SUPABASE_PUBLISHABLE_KEY,
+  "Authorization":"Bearer "+config.SUPABASE_PUBLISHABLE_KEY,
+  "Content-Type":"application/json"
+ };
+}
+
+function normalizeCommunity(row){
+ return {
+  ...row,
+  rating:Number(row.rating||0),
+  reviews:Number(row.review_count||0),
+  query:row.google_maps_uri || row.maps_url || row.name,
+  menus:Array.isArray(row.menus)?row.menus.map(x=>Array.isArray(x)?x:[x.name||"",x.price_or_note||x.note||""]):[],
+  highlights:Array.isArray(row.highlights)?row.highlights:[],
+  community:true
+ };
+}
+
+async function loadCommunity(){
+ if(!configured) {
+   document.getElementById("setupBanner").classList.add("show");
+   return;
+ }
+ try {
+  const url=config.SUPABASE_URL.replace(/\/$/,"")+"/rest/v1/restaurants?status=eq.approved&select=*&order=created_at.desc";
+  const res=await fetch(url,{headers:publicHeaders()});
+  if(!res.ok) throw new Error("DB "+res.status);
+  communityPlaces=(await res.json()).map(normalizeCommunity);
+  places=[...staticPlaces,...communityPlaces];
+  renderList();
+ } catch(e) {
+  console.warn("Community load failed",e);
+ }
+}
 
 function renderTabs(){
- tabs.innerHTML=areas.map(a=>`<button class="tab ${a===filter?'active':''}" data-a="${a}">${a}</button>`).join("");
+ const available=new Set(places.map(p=>p.area||"기타"));
+ const areas=fixedAreas.filter(a=>a==="전체"||available.has(a));
+ tabs.innerHTML=areas.map(a=>`<button class="tab ${a===filter?'active':''}" data-a="${esc(a)}">${esc(a)}</button>`).join("");
  tabs.querySelectorAll("button").forEach(b=>b.onclick=()=>{filter=b.dataset.a;renderList()});
 }
 
-function showDetail(i, openMobile=true){
+function showDetail(i,openMobile=true){
  current=i; const p=places[i];
- const menus=p.menus.map(m=>`<div class="menuitem"><span>${esc(m[0])}</span><span>${esc(m[1])}</span></div>`).join("");
- const bullets=p.highlights.map(x=>`<li>${esc(x)}</li>`).join("");
+ if(!p) return;
+ const menus=(p.menus||[]).length ? p.menus.map(m=>`<div class="menuitem"><span>${esc(m[0])}</span><span>${esc(m[1])}</span></div>`).join("") : `<div class="facttext">확실하게 확인된 추천 메뉴 정보 없음</div>`;
+ const bullets=(p.highlights||[]).length ? p.highlights.map(x=>`<li>${esc(x)}</li>`).join("") : `<li>공개된 가게 정보 기준으로 자동 정리된 항목이야.</li>`;
+ const reviewText=p.reviews ? `리뷰 ${Number(p.reviews).toLocaleString()}개` : "리뷰 수 확인 중";
+ const ratingText=p.rating ? Number(p.rating).toFixed(1) : "–";
+ const route=p.google_maps_uri||p.maps_url||maps(p.query||p.name);
  content.innerHTML=`
-   <div class="maphero static-hero">
+   <div class="maphero">
     <div class="hero-place">
       <div class="hero-pin">📍</div>
-      <div>
-        <div class="hero-area">${esc(p.area)}</div>
-        <div class="hero-cat">${esc(p.category)}</div>
-      </div>
+      <div><div class="hero-area">${esc(p.area||"기타")}</div><div class="hero-cat">${esc(p.category||"맛집")}</div></div>
     </div>
    </div>
    <div class="detailbody">
     <h2 class="dtitle">${esc(p.name)}</h2>
-    <div class="dmeta">⭐ <b>${p.rating.toFixed(1)}</b> · 리뷰 ${p.reviews.toLocaleString()}개 · ${esc(p.category)} · ${esc(p.price)}</div>
+    <div class="dmeta">⭐ <b>${ratingText}</b> · ${reviewText} · ${esc(p.category||"")} · ${esc(p.price||"가격 정보 없음")}</div>
+    ${p.community && p.submitted_by ? `<div class="contributor">＋ ${esc(p.submitted_by)} 님이 추가</div>`:""}
+    ${p.user_note ? `<div class="usernote">💬 ${esc(p.user_note)}</div>`:""}
     <div class="quick">
-      <a href="${maps(p.query)}" target="_blank" rel="noopener noreferrer">↗ 길찾기</a>
-      <a href="${googleReviews(p.query)}" target="_blank" rel="noopener noreferrer">★ 리뷰</a>
+      <a href="${route}" target="_blank" rel="noopener noreferrer">↗ 길찾기</a>
+      <a href="${route}" target="_blank" rel="noopener noreferrer">★ 리뷰</a>
       <a href="${tel(p)}">${p.phone?'☎ 전화':'⌕ 검색'}</a>
     </div>
-    <div class="fact"><div class="icon">◷</div><div class="facttext">${esc(p.hours)}</div></div>
-    <div class="fact"><div class="icon">⌖</div><div class="facttext">${esc(p.address)}</div></div>
+    <div class="fact"><div class="icon">◷</div><div class="facttext">${esc(p.hours||"영업시간 정보 없음")}</div></div>
+    <div class="fact"><div class="icon">⌖</div><div class="facttext">${esc(p.address||"주소 정보 없음")}</div></div>
     ${p.phone?`<div class="fact"><div class="icon">☎</div><div class="facttext">${esc(p.phone)}</div></div>`:""}
-    <div class="section">
-      <h3>가게 소개</h3>
-      <p>${esc(p.description)}</p>
-    </div>
-    <div class="section">
-      <h3>분위기와 평가</h3>
-      <ul class="bullets">${bullets}</ul>
-    </div>
-    <div class="section">
-      <h3>추천 메뉴</h3>
-      <div class="menu">${menus}</div>
-    </div>
+    <div class="section"><h3>가게 소개</h3><p>${esc(p.description||p.summary||"")}</p></div>
+    <div class="section"><h3>분위기와 평가</h3><ul class="bullets">${bullets}</ul></div>
+    <div class="section"><h3>추천 메뉴</h3><div class="menu">${menus}</div></div>
    </div>`;
- document.querySelectorAll(".card").forEach(c=>c.classList.toggle("selected", Number(c.dataset.i)===i));
- if(openMobile && window.matchMedia("(max-width:980px)").matches){
-   panel.classList.add("open"); backdrop.classList.add("show"); document.body.style.overflow="hidden";
+ document.querySelectorAll(".card").forEach(c=>c.classList.toggle("selected",Number(c.dataset.i)===i));
+ if(openMobile&&window.matchMedia("(max-width:980px)").matches){
+   panel.classList.add("open");backdrop.classList.add("show");document.body.style.overflow="hidden";
  }
 }
 
-function closeMobile(){
- panel.classList.remove("open"); backdrop.classList.remove("show"); document.body.style.overflow="";
-}
-document.getElementById("closemobile").onclick=closeMobile;
-backdrop.onclick=closeMobile;
-document.addEventListener("keydown",e=>{if(e.key==="Escape") closeMobile()});
+function closeMobile(){panel.classList.remove("open");backdrop.classList.remove("show");document.body.style.overflow=""}
+document.getElementById("closemobile").onclick=closeMobile; backdrop.onclick=closeMobile;
 
 function renderList(){
  renderTabs();
  const needle=q.trim().toLowerCase();
  let items=places.map((p,i)=>({...p,_i:i}))
-  .filter(p=>filter==="전체"||p.area===filter)
-  .filter(p=>!needle||(p.name+" "+p.category+" "+p.area+" "+p.summary+" "+p.description+" "+p.menus.flat().join(" ")).toLowerCase().includes(needle))
-  .sort((a,b)=>b.rating-a.rating||a.name.localeCompare(b.name,"ko"));
+  .filter(p=>filter==="전체"||(p.area||"기타")===filter)
+  .filter(p=>!needle||(p.name+" "+(p.category||"")+" "+(p.area||"")+" "+(p.summary||"")+" "+(p.description||"")+" "+JSON.stringify(p.menus||[])).toLowerCase().includes(needle))
+  .sort((a,b)=>(Number(b.rating||0)-Number(a.rating||0))||a.name.localeCompare(b.name,"ko"));
  count.textContent=`${items.length}곳`;
  grid.innerHTML=items.map(p=>`
   <article class="card ${p._i===current?'selected':''}" data-i="${p._i}">
    <div class="row">
     <div>
-     <div class="name" data-open="${p._i}">${esc(p.name)}</div>
-     <div class="tags"><span class="cat">${esc(p.category)}</span><span class="area">📍 ${esc(p.area)}</span></div>
+     <div class="name" data-open="${p._i}">${esc(p.name)}${p.community?'<span class="newbadge">공유추가</span>':''}</div>
+     <div class="tags"><span class="cat">${esc(p.category||"맛집")}</span><span class="area">📍 ${esc(p.area||"기타")}</span></div>
     </div>
-    <div class="score">⭐ ${p.rating.toFixed(1)}</div>
+    <div class="score">⭐ ${p.rating?Number(p.rating).toFixed(1):"–"}</div>
    </div>
-   <div class="summary">${esc(p.summary)}</div>
+   <div class="summary">${esc(p.summary||"")}</div>
+   ${p.user_note?`<div class="usernote">💬 ${esc(p.user_note)}</div>`:""}
    <div class="actions">
     <button class="btn detailbtn" data-open="${p._i}">상세 정보</button>
-    <a class="btn mapbtn" href="${maps(p.query)}" target="_blank" rel="noopener noreferrer">지도 보기</a>
+    <a class="btn mapbtn" href="${p.google_maps_uri||p.maps_url||maps(p.query||p.name)}" target="_blank" rel="noopener noreferrer">지도 보기</a>
    </div>
   </article>`).join("");
  document.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>showDetail(Number(el.dataset.open),true));
 }
+
+function setStatus(type,msg){
+ addStatus.className="status show "+type;
+ addStatus.textContent=msg;
+}
+function openAdd(){
+ addModal.classList.add("show");addModal.setAttribute("aria-hidden","false");
+ if(!configured) setStatus("err","아직 공용 DB 연결 전이야. 프로젝트의 config.js에 Supabase URL과 Publishable Key를 넣으면 바로 작동해.");
+ else addStatus.className="status";
+}
+function closeAdd(){
+ addModal.classList.remove("show");addModal.setAttribute("aria-hidden","true");
+}
+
+document.getElementById("openAdd").onclick=openAdd;
+document.getElementById("closeAdd").onclick=closeAdd;
+addModal.onclick=e=>{if(e.target===addModal)closeAdd()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAdd();closeMobile()}});
 search.oninput=e=>{q=e.target.value;renderList()};
+
+document.getElementById("addForm").onsubmit=async e=>{
+ e.preventDefault();
+ if(!configured) return setStatus("err","먼저 Supabase 연결 설정이 필요해.");
+ const mapsUrl=document.getElementById("mapsUrl").value.trim();
+ const note=document.getElementById("userNote").value.trim();
+ const nickname=document.getElementById("nickname").value.trim();
+ if(!/https?:\/\//i.test(mapsUrl)) return setStatus("err","Google 지도 링크를 붙여넣어줘.");
+
+ submitAdd.disabled=true;
+ setStatus("work","🔎 Google에서 가게 정보를 찾고, AI가 한줄 소개·평가·추천메뉴를 정리하는 중…");
+ try {
+  const fn=config.SUPABASE_URL.replace(/\/$/,"")+"/functions/v1/enrich-place";
+  const res=await fetch(fn,{
+   method:"POST",
+   headers:publicHeaders(),
+   body:JSON.stringify({maps_url:mapsUrl,user_note:note,submitted_by:nickname})
+  });
+  const body=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(body.error||body.message||"추가 실패 ("+res.status+")");
+  setStatus("ok", body.existing ? "이미 등록된 가게라 기존 정보를 불러왔어." : "✅ 추가 완료! 이제 이 링크로 들어오는 사람 모두에게 보여.");
+  document.getElementById("addForm").reset();
+  await loadCommunity();
+  const idx=places.findIndex(p=>p.place_id&&p.place_id===body.restaurant?.place_id);
+  if(idx>=0) showDetail(idx,false);
+ } catch(err) {
+  setStatus("err","추가하지 못했어: "+err.message);
+ } finally {
+  submitAdd.disabled=false;
+ }
+};
+
 renderList();
 showDetail(0,false);
+loadCommunity();
 </script>
 </body>
 </html>
