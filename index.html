@@ -81,6 +81,20 @@ button,input,select,textarea{font:inherit}
 .source-link{display:block;border:1px solid #e5e5e5;border-radius:11px;padding:9px 10px;text-decoration:none;color:#2a2522;background:#fafafa;font-size:12px;line-height:1.45}
 .source-brand{font-size:10px;color:#6d655f;margin-bottom:3px}
 .maps-attribution{font-size:11px;color:var(--muted);line-height:1.55;margin-top:8px}
+.photo-gallery{display:grid;grid-template-columns:1.35fr .9fr .9fr;gap:7px;margin:0 0 14px}
+.photo-link{position:relative;display:block;min-height:105px;border-radius:15px;overflow:hidden;background:#f1e9e4;border:1px solid var(--line)}
+.photo-link:first-child{grid-row:span 2;min-height:218px}
+.photo-link img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;display:block}
+.photo-credit{position:absolute;left:7px;bottom:7px;background:rgba(20,16,14,.72);color:#fff;border-radius:999px;padding:4px 7px;font-size:9px;max-width:calc(100% - 14px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.no-photo{display:flex;align-items:center;justify-content:center;min-height:118px;border:1px dashed #d9c8bd;border-radius:15px;background:linear-gradient(135deg,#fbf3ed,#f0e6df);color:#776a62;font-size:12px;text-align:center;padding:18px;line-height:1.6;margin-bottom:14px}
+.fact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.fact-card{background:#faf5f1;border:1px solid var(--line);border-radius:14px;padding:12px}
+.fact-card.wide{grid-column:1/-1}
+.fact-card .ico{font-size:15px;margin-right:4px}
+.fact-card label{display:block;font-size:10px;color:var(--muted);font-weight:700;margin-bottom:5px}
+.fact-card div{font-size:12.5px;font-weight:750;line-height:1.5;word-break:break-word}
+.detail-card.compact{padding:13px 14px}
+.detail-card h3 .sub{font-size:10px;color:var(--muted);font-weight:600;margin-left:5px}
 .foot{margin-top:14px;color:var(--muted);font-size:11px;line-height:1.5}
 
 .closemobile{display:none;position:absolute;right:12px;top:12px;z-index:5;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.95);font-size:22px;box-shadow:0 2px 9px rgba(0,0,0,.13)}
@@ -121,7 +135,10 @@ button,input,select,textarea{font:inherit}
 @media(max-width:560px){
   .fields{grid-template-columns:1fr}
   .field.full{grid-column:auto}
-  .info-grid{grid-template-columns:1fr}
+  .info-grid,.fact-grid{grid-template-columns:1fr}
+  .fact-card.wide{grid-column:auto}
+  .photo-gallery{grid-template-columns:1fr 1fr}
+  .photo-link:first-child{grid-column:1/-1;grid-row:auto;min-height:190px}
 }
 @media(min-width:981px) and (max-width:1180px){
   .app{grid-template-columns:minmax(480px,1fr) 430px}
@@ -136,7 +153,7 @@ button,input,select,textarea{font:inherit}
       <div class="hero-top">
         <div>
           <h1>맹구 & 콩콩 오사카·아리마 맛집 🍓🥩</h1>
-          <p>기존 맛집 목록 + Gemini 2.5 Flash의 Google Maps 그라운딩으로 새 가게를 자동 조사해 추가하는 버전.</p>
+          <p>기존 맛집 목록 + Gemini 2.5 Flash로 새 가게를 자동 조사해 추가하는 버전. Google Maps 조회가 불안정하면 Google Search로 자동 대체해.</p>
         </div>
         <button id="openAdd" class="add-btn">＋ 맛집 추가</button>
       </div>
@@ -153,7 +170,7 @@ button,input,select,textarea{font:inherit}
     </div>
     <div class="meta"><span id="count"></span><span>★ 평점 높은 순</span></div>
     <main id="grid" class="grid"></main>
-    <div class="foot">※ Gemini가 자동으로 추가한 정보는 Google Maps 그라운딩 결과를 기반으로 하며, 동명이인·영업시간 변경 가능성이 있으니 방문 직전 지도에서 최종 확인 권장.</div>
+    <div class="foot">※ 자동 추가 정보는 Google Maps를 우선 사용하고 실패 시 Google Search를 보조로 사용해. 동명이인·영업시간 변경 가능성이 있으니 방문 직전 지도에서 최종 확인 권장.</div>
   </section>
 
   <aside class="rightwrap">
@@ -170,7 +187,7 @@ button,input,select,textarea{font:inherit}
     <div class="modalhead">
       <div>
         <h2>✨ Gemini로 맛집 추가</h2>
-        <div class="modaldesc">가게 이름만 넣어도 Gemini가 Google Maps에서 찾아서 평점·주소·영업정보·이용객 평가·대표메뉴를 정리해. 동명이인이 걱정되면 지역/힌트를 같이 적어줘.</div>
+        <div class="modaldesc">가게 이름만 넣어도 Gemini가 먼저 Google Maps에서 찾고, 실패하면 Google Search로 자동 대체해서 주소·영업정보·이용객 평가·대표메뉴를 정리해. 동명이인이 걱정되면 지역/힌트를 같이 적어줘.</div>
       </div>
       <button id="closeAdd" class="xbtn">×</button>
     </div>
@@ -245,6 +262,10 @@ function normalizeAI(row){
     reviews: row.review_count == null ? null : Number(row.review_count),
     menus: Array.isArray(row.menus) ? row.menus : [],
     tips: Array.isArray(row.highlights) ? row.highlights : [],
+    visitor_reviews: Array.isArray(row.visitor_reviews) ? row.visitor_reviews : [],
+    atmosphere: Array.isArray(row.atmosphere) ? row.atmosphere : [],
+    good_to_know: Array.isArray(row.good_to_know) ? row.good_to_know : [],
+    photos: Array.isArray(row.photo_urls) ? row.photo_urls : [],
     sources: Array.isArray(row.maps_sources) ? row.maps_sources : [],
     detail: row.description || "",
     query: row.google_maps_uri || row.maps_url || row.name,
@@ -285,19 +306,39 @@ function showDetail(index,mobileOpen=true){
   if(!p) return;
   const rating = p.rating == null ? "–" : Number(p.rating).toFixed(1);
   const reviews = p.reviews ? ` · 리뷰 ${Number(p.reviews).toLocaleString()}개` : "";
+
   const menus = (p.menus||[]).map(m=>{
     if(Array.isArray(m)) return `<div class="menuitem"><span>${esc(m[0])}</span><span>${esc(m[1]||"추천")}</span></div>`;
     if(typeof m==="object") return `<div class="menuitem"><span>${esc(m.name||"")}</span><span>${esc(m.price_or_note||m.note||"추천")}</span></div>`;
     return `<div class="menuitem"><span>${esc(m)}</span><span>추천</span></div>`;
-  }).join("") || `<div class="info-card"><div>확실히 확인된 추천 메뉴 정보 없음</div></div>`;
-  const tips = (p.tips||p.highlights||[]).map(t=>`<li>${esc(t)}</li>`).join("") || `<li>공개된 정보 기준으로 정리한 가게야.</li>`;
-  const sources = (p.sources||[]).map(s=>`<a class="source-link" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><div class="source-brand" translate="no">Google Maps</div><b>${esc(s.name||p.name)}</b></a>`).join("");
-  const infoCards = [
-    p.address ? `<div class="info-card"><label>주소</label><div>${esc(p.address)}</div></div>` : "",
-    p.hours ? `<div class="info-card"><label>영업시간</label><div>${esc(p.hours)}</div></div>` : "",
-    p.phone ? `<div class="info-card"><label>전화</label><div>${esc(p.phone)}</div></div>` : "",
-    p.price ? `<div class="info-card"><label>가격대</label><div>${esc(p.price)}</div></div>` : ""
-  ].join("");
+  }).join("") || `<p>확실히 확인된 추천 메뉴 정보는 아직 없어.</p>`;
+
+  const visitor = (p.visitor_reviews?.length ? p.visitor_reviews : (p.tips||p.highlights||[]))
+    .map(t=>`<li>${esc(t)}</li>`).join("");
+  const atmosphere = (p.atmosphere||[]).map(t=>`<li>${esc(t)}</li>`).join("");
+  const know = (p.good_to_know?.length ? p.good_to_know : [])
+    .map(t=>`<li>${esc(t)}</li>`).join("");
+
+  const sources = (p.sources||[]).map(s=>`<a class="source-link" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><div class="source-brand">${esc(s.brand||'출처')}</div><b>${esc(s.name||p.name)}</b></a>`).join("");
+
+  const photos=(p.photos||[]).slice(0,5).map(ph=>{
+    const url=typeof ph==='string'?ph:ph.url;
+    const source=typeof ph==='string'?'':(ph.source_url||'');
+    const label=typeof ph==='string'?'매장 사진':(ph.alt||'매장·메뉴 사진');
+    if(!url) return '';
+    const wrap=source?`<a class="photo-link" href="${esc(source)}" target="_blank" rel="noopener noreferrer">`:`<div class="photo-link">`;
+    const close=source?'</a>':'</div>';
+    return `${wrap}<img src="${esc(url)}" alt="${esc(label)}" loading="lazy" onerror="this.parentElement.style.display='none'"><span class="photo-credit">${esc(label)}</span>${close}`;
+  }).join('');
+
+  const facts=[
+    p.hours ? `<div class="fact-card"><label>🕒 운영시간</label><div>${esc(p.hours)}</div></div>` : '',
+    p.phone ? `<div class="fact-card"><label>☎️ 전화번호</label><div>${esc(p.phone)}</div></div>` : '',
+    p.address ? `<div class="fact-card wide"><label>📍 주소</label><div>${esc(p.address)}</div></div>` : '',
+    p.price ? `<div class="fact-card"><label>💴 가격대</label><div>${esc(p.price)}</div></div>` : ''
+  ].join('');
+
+  const lookupLabel = p.lookup_method==='google_search' ? 'Google Search 보조조회' : p.lookup_method==='google_maps' ? 'Google Maps 조회' : '';
 
   detail.innerHTML=`
     <div class="banner">
@@ -306,30 +347,30 @@ function showDetail(index,mobileOpen=true){
     <div class="body">
       <h2 class="title">${esc(p.name)}</h2>
       <div class="submeta">⭐ <b>${rating}</b>${reviews} · ${esc(p.category||"")}</div>
-      ${p.ai_generated && p.submitted_by ? `<div class="contributor">✨ ${esc(p.submitted_by)} 님이 Gemini로 추가</div>`:""}
+      ${lookupLabel?`<div class="contributor">✨ ${esc(lookupLabel)}로 자동 정리</div>`:""}
+      ${p.ai_generated && p.submitted_by ? `<div class="contributor">추가한 사람 · ${esc(p.submitted_by)}</div>`:""}
       ${p.user_note ? `<div class="user-note">💬 ${esc(p.user_note)}</div>`:""}
 
-      <a class="map-only" href="${detailMapUrl(p)}" target="_blank" rel="noopener noreferrer">Google 지도 보기</a>
+      ${photos ? `<div class="photo-gallery">${photos}</div>` : `<div class="no-photo">📷 자동으로 가져올 수 있는 사진이 없는 가게야.<br>아래 Google 지도에서 매장·메뉴 사진을 바로 확인할 수 있어.</div>`}
 
-      ${infoCards ? `<div class="info-grid">${infoCards}</div>` : ""}
+      ${facts ? `<div class="fact-grid">${facts}</div>` : ''}
 
-      <div class="detail-card">
-        <h3>한줄 소개</h3>
-        <p>${esc(p.summary||"")}</p>
-      </div>
-      <div class="detail-card">
-        <h3>가게 설명</h3>
+      <div class="detail-card compact">
+        <h3>매장 소개</h3>
         <p>${esc(p.detail||p.description||p.summary||"")}</p>
       </div>
-      <div class="detail-card">
-        <h3>분위기와 이용객 평가</h3>
-        <ul class="bullets">${tips}</ul>
-      </div>
+
+      ${visitor ? `<div class="detail-card"><h3>방문객 평가 <span class="sub">요약</span></h3><ul class="bullets">${visitor}</ul></div>` : ''}
       <div class="detail-card">
         <h3>추천 메뉴</h3>
         <div class="menu">${menus}</div>
       </div>
-      ${sources ? `<div class="detail-card"><h3>출처</h3><div class="sources">${sources}</div><div class="maps-attribution">위 AI 요약의 장소 정보에는 <span translate="no">Google Maps</span> 그라운딩 데이터가 사용됐어.</div></div>` : ""}
+      ${atmosphere ? `<div class="detail-card"><h3>분위기</h3><ul class="bullets">${atmosphere}</ul></div>` : ''}
+      ${know ? `<div class="detail-card"><h3>알아두면 좋은 점</h3><ul class="bullets">${know}</ul></div>` : ''}
+
+      <a class="map-only" href="${detailMapUrl(p)}" target="_blank" rel="noopener noreferrer">Google 지도 보기</a>
+
+      ${sources ? `<div class="detail-card"><h3>정보 출처</h3><div class="sources">${sources}</div><div class="maps-attribution">자동 추가 정보는 공개된 Google Maps 또는 Google Search 결과를 바탕으로 요약했어.</div></div>` : ''}
     </div>`;
 
   document.querySelectorAll(".card").forEach(c=>c.classList.toggle("selected",Number(c.dataset.index)===index));
@@ -396,13 +437,14 @@ document.getElementById("addForm").onsubmit=async e=>{
   };
   if(!payload.name) return setStatus("err","가게 이름을 입력해줘.");
   submitAdd.disabled=true;
-  setStatus("work","✨ Gemini가 Google Maps에서 정확한 가게를 찾고 카드용 내용을 만드는 중…");
+  setStatus("work","✨ Gemini가 가게를 찾고 카드용 내용을 만드는 중…");
   try{
     const fn=config.SUPABASE_URL.replace(/\/$/,"")+"/functions/v1/gemini-place";
     const res=await fetch(fn,{method:"POST",headers:publicHeaders(),body:JSON.stringify(payload)});
     const body=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(body.error||body.message||"추가 실패 ("+res.status+")");
-    setStatus("ok",body.existing?"이미 추가된 가게라 기존 정보를 불러왔어.":"✅ 추가 완료! 같은 사이트를 보는 사람에게도 바로 보여.");
+    const method=body.place?.lookup_method==='google_search'?' (Google Search 보조조회)':' (Google Maps 조회)';
+    setStatus("ok",body.existing?"이미 추가된 가게라 기존 정보를 불러왔어.":"✅ 추가 완료!"+method+" 같은 사이트를 보는 사람에게도 바로 보여.");
     document.getElementById("addForm").reset();
     await loadAIPlaces();
     const id=body.place?.id;
