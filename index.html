@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ko">
 <head>
@@ -8,20 +7,24 @@
 <meta name="theme-color" content="#fff9f6">
 <style>
 :root {
-  --bg:#fff9f6; --card:#fff; --text:#201b18; --muted:#786e67; --line:#efe3db;
-  --soft:#f8f0eb; --chip:#fff0f3; --chiptext:#a63b56; --accent:#211d1a;
-  --shadow:0 12px 36px rgba(70,44,31,.07);
+  --bg:#fff9f6;--card:#fff;--text:#201b18;--muted:#786e67;--line:#efe3db;
+  --soft:#f8f0eb;--chip:#fff0f3;--chiptext:#a63b56;--accent:#211d1a;
+  --green:#19734a;--shadow:0 12px 36px rgba(70,44,31,.07);
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif}
-button,input{font:inherit}
+button,input,select,textarea{font:inherit}
 .app{max-width:1480px;margin:auto;display:grid;grid-template-columns:minmax(560px,1fr) 500px;gap:18px;padding:16px}
 .left{min-width:0}
 .hero{background:linear-gradient(135deg,#fff,#fff2ea);border:1px solid var(--line);border-radius:24px;padding:20px 22px;box-shadow:var(--shadow)}
+.hero-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
 .hero h1{margin:0 0 8px;font-size:29px;letter-spacing:-.045em}
 .hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+.add-btn{border:0;background:var(--accent);color:#fff;border-radius:14px;padding:11px 14px;font-size:13px;font-weight:850;white-space:nowrap;cursor:pointer}
 .statrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px;color:#5f5650}
+.setup-note{display:none;margin-top:12px;border:1px dashed #d9c7bb;background:#fff;border-radius:12px;padding:10px 12px;color:#655950;font-size:12px;line-height:1.5}
+.setup-note.show{display:block}
 .controls{position:sticky;top:0;z-index:10;background:rgba(255,249,246,.92);backdrop-filter:blur(12px);padding:12px 0 8px}
 .search{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:15px;background:#fff;outline:none;font-size:15px}
 .tabs{display:flex;gap:8px;overflow:auto;padding-top:10px;scrollbar-width:none}
@@ -39,48 +42,89 @@ button,input{font:inherit}
 .tags{margin-top:7px}
 .cat{display:inline-block;background:var(--chip);color:var(--chiptext);padding:5px 8px;border-radius:999px;font-size:11px;font-weight:700}
 .area{font-size:11px;color:var(--muted);margin-left:6px}
+.ai-badge{display:inline-block;background:#e9f7ef;color:var(--green);border-radius:999px;padding:4px 7px;font-size:10px;font-weight:850;margin-left:5px}
 .summary{font-size:13px;color:#4d4540;line-height:1.55;margin:11px 0 12px;min-height:40px}
+.user-note{font-size:12px;background:#fff7d9;border-radius:10px;padding:8px 9px;margin:-3px 0 12px;line-height:1.5}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .btn{border:0;border-radius:11px;padding:10px 8px;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center}
 .detailbtn{background:var(--soft);color:#483c35}
 .mapbtn{background:var(--accent);color:#fff}
+
 .rightwrap{position:relative}
 .panel{position:sticky;top:16px;height:calc(100vh - 32px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
-.banner{height:190px;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.95) 0 7%,transparent 8%),linear-gradient(135deg,#f8e9de,#eee1d6 55%,#e0d6cf);display:flex;align-items:flex-end}
-.bannerbox{margin:18px;background:rgba(255,255,255,.92);padding:12px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.8);display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(65,39,27,.08)}
+.banner{height:170px;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.95) 0 7%,transparent 8%),linear-gradient(135deg,#f8e9de,#eee1d6 55%,#e0d6cf);display:flex;align-items:flex-end}
+.bannerbox{margin:18px;background:rgba(255,255,255,.93);padding:12px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.8);display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(65,39,27,.08)}
 .pin{font-size:24px}
 .bannerarea{font-size:12px;color:#6d625b;font-weight:700}
 .bannercat{font-size:15px;font-weight:850;margin-top:2px}
 .body{padding:20px}
 .title{font-size:26px;font-weight:900;line-height:1.25;letter-spacing:-.045em;margin:0 0 6px}
-.submeta{font-size:13px;color:#4c4440;line-height:1.5}
+.submeta{font-size:13px;color:#4c4440;line-height:1.55}
 .submeta b{color:#171310}
-.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
-.quick a{text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:10px 8px;text-align:center;font-size:12px;font-weight:850;color:#2a2522;background:#fff}
-.quick a:first-child{background:var(--accent);color:#fff;border-color:var(--accent)}
-.section{padding:16px 0;border-top:1px solid var(--line)}
-.section h3{margin:0 0 10px;font-size:17px;letter-spacing:-.02em}
-.section p{margin:0;color:#48403b;font-size:13.5px;line-height:1.75}
+.contributor{font-size:11px;color:var(--muted);margin-top:5px}
+.map-only{display:block;margin:15px 0;text-decoration:none;background:var(--accent);color:#fff;border-radius:13px;padding:12px 14px;text-align:center;font-size:13px;font-weight:850}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.info-card{background:#faf5f1;border:1px solid var(--line);border-radius:13px;padding:11px}
+.info-card label{display:block;font-size:10px;color:var(--muted);margin-bottom:4px}
+.info-card div{font-size:12px;font-weight:750;line-height:1.45;word-break:break-word}
+.detail-card{border:1px solid var(--line);background:#fff;border-radius:16px;padding:14px;margin-top:10px;box-shadow:0 3px 12px rgba(65,39,27,.035)}
+.detail-card h3{margin:0 0 9px;font-size:15px;letter-spacing:-.02em}
+.detail-card p{margin:0;color:#48403b;font-size:13.5px;line-height:1.75}
+.bullets{margin:0;padding-left:18px}
+.bullets li{margin:0 0 7px;font-size:13px;line-height:1.6;color:#403934}
 .menu{display:grid;gap:7px}
 .menuitem{display:flex;justify-content:space-between;gap:12px;background:#fffaf7;border:1px solid #f1e7e0;padding:10px 11px;border-radius:12px;font-size:13px}
 .menuitem span:first-child{font-weight:750}
 .tiprow{display:flex;flex-wrap:wrap;gap:8px}
 .tipchip{background:#fff7d9;color:#7a5a00;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.sources{display:grid;gap:7px}
+.source-link{display:block;border:1px solid #e5e5e5;border-radius:11px;padding:9px 10px;text-decoration:none;color:#2a2522;background:#fafafa;font-size:12px;line-height:1.45}
+.source-brand{font-size:10px;color:#6d655f;margin-bottom:3px}
+.maps-attribution{font-size:11px;color:var(--muted);line-height:1.55;margin-top:8px}
 .foot{margin-top:14px;color:var(--muted);font-size:11px;line-height:1.5}
+
 .closemobile{display:none;position:absolute;right:12px;top:12px;z-index:5;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.95);font-size:22px;box-shadow:0 2px 9px rgba(0,0,0,.13)}
 .backdrop{display:none}
+
+/* add modal */
+.modalback{display:none;position:fixed;inset:0;z-index:200;background:rgba(24,18,15,.52);padding:18px;align-items:center;justify-content:center}
+.modalback.show{display:flex}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 20px 70px rgba(0,0,0,.25)}
+.modalhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.modal h2{margin:0;font-size:22px;letter-spacing:-.035em}
+.modaldesc{font-size:13px;color:var(--muted);line-height:1.55;margin:7px 0 15px}
+.xbtn{border:0;background:var(--soft);width:36px;height:36px;border-radius:50%;font-size:21px;cursor:pointer}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{margin-top:10px}
+.field.full{grid-column:1/-1}
+.field label{display:block;font-size:12px;font-weight:800;margin:0 0 6px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff;outline:none;font-size:14px}
+.field textarea{min-height:72px;resize:vertical}
+.hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.45}
+.submit{width:100%;border:0;border-radius:13px;margin-top:16px;padding:12px 14px;background:var(--accent);color:#fff;font-weight:850;cursor:pointer}
+.submit:disabled{opacity:.55;cursor:wait}
+.status{display:none;margin-top:12px;border-radius:12px;padding:11px 12px;font-size:12px;line-height:1.55}
+.status.show{display:block} .status.ok{background:#eaf8ef;color:#16633e} .status.err{background:#fff0f0;color:#9d3030} .status.work{background:#f7f1ed;color:#62534b}
+
 @media(max-width:980px){
   .app{display:block;padding:12px}
   .grid{grid-template-columns:1fr}
-  .panel{position:fixed;z-index:101;inset:0 0 0 auto;width:min(520px,100%);height:100dvh;border-radius:0;transform:translateX(102%);transition:transform .22s ease;top:0}
+  .hero-top{align-items:flex-start}
+  .add-btn{padding:10px 11px;font-size:12px}
+  .panel{position:fixed;z-index:101;inset:0 0 0 auto;width:min(540px,100%);height:100dvh;border-radius:0;transform:translateX(102%);transition:transform .22s ease;top:0}
   .panel.open{transform:translateX(0)}
-  .banner{height:180px}
+  .banner{height:165px}
   .closemobile{display:block}
   .backdrop{display:block;position:fixed;inset:0;background:rgba(19,14,11,.45);opacity:0;pointer-events:none;transition:.2s;z-index:100}
   .backdrop.show{opacity:1;pointer-events:auto}
 }
+@media(max-width:560px){
+  .fields{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .info-grid{grid-template-columns:1fr}
+}
 @media(min-width:981px) and (max-width:1180px){
-  .app{grid-template-columns:minmax(480px,1fr) 420px}
+  .app{grid-template-columns:minmax(480px,1fr) 430px}
   .grid{grid-template-columns:1fr}
 }
 </style>
@@ -89,21 +133,29 @@ button,input{font:inherit}
 <div class="app">
   <section class="left">
     <div class="hero">
-      <h1>맹구 & 콩콩 오사카·아리마 맛집 🍓🥩</h1>
-      <p>지금까지 고른 맛집/카페/디저트 후보를 지역별로 모아둔 웹 정리판이야. 가게 이름 또는 상세 버튼을 누르면 오른쪽에서 바로 자세히 볼 수 있어.</p>
+      <div class="hero-top">
+        <div>
+          <h1>맹구 & 콩콩 오사카·아리마 맛집 🍓🥩</h1>
+          <p>기존 맛집 목록 + Gemini 2.5 Flash의 Google Maps 그라운딩으로 새 가게를 자동 조사해 추가하는 버전.</p>
+        </div>
+        <button id="openAdd" class="add-btn">＋ 맛집 추가</button>
+      </div>
       <div class="statrow">
-        <span class="pill">총 40곳</span>
+        <span class="pill">기본 43곳</span>
         <span class="pill">숙소 근처 · 오사카역·우메다 · 신사이바시 · 혼마치·요도야바시 · 아리마온천</span>
       </div>
+      <div id="setupNote" class="setup-note">Gemini 자동추가 기능은 아직 Supabase 연결 전이야. <b>config.js</b>에 Supabase Project URL과 Publishable Key를 넣으면 활성화돼.</div>
     </div>
+
     <div class="controls">
       <input id="search" class="search" placeholder="가게명 · 메뉴 · 지역 검색">
       <div id="tabs" class="tabs"></div>
     </div>
     <div class="meta"><span id="count"></span><span>★ 평점 높은 순</span></div>
     <main id="grid" class="grid"></main>
-    <div class="foot">※ 평점은 대화 중 정리한 기준이고 실제 방문 전 지도에서 최신 정보 확인하는 게 좋아.</div>
+    <div class="foot">※ Gemini가 자동으로 추가한 정보는 Google Maps 그라운딩 결과를 기반으로 하며, 동명이인·영업시간 변경 가능성이 있으니 방문 직전 지도에서 최종 확인 권장.</div>
   </section>
+
   <aside class="rightwrap">
     <div id="panel" class="panel">
       <button id="closemobile" class="closemobile">×</button>
@@ -113,131 +165,261 @@ button,input{font:inherit}
 </div>
 <div id="backdrop" class="backdrop"></div>
 
-<script>
-const places = [{"area": "숙소 근처", "category": "샌드위치·카페", "name": "GURFA", "rating": 4.7, "summary": "쿠바샌드·핫샌드 중심의 캐주얼 브런치 가게.", "detail": "숙소 근처에서 가볍게 아침이나 점심 먹기 좋은 샌드위치 가게야. 브런치 느낌으로 편하게 들르기 좋고 일정 시작 전에 가볍게 배 채우기 좋음.", "menus": ["쿠바샌드", "핫샌드", "커피"], "tips": ["브런치용", "가볍게 먹기 좋음"], "query": "GURFA Osaka"}, {"area": "숙소 근처", "category": "카페·브런치", "name": "heys", "rating": 4.6, "summary": "커피·팬케이크·브런치 메뉴가 있는 카페.", "detail": "팬케이크와 브런치 메뉴가 있는 카페라 숙소 근처 카페 후보로 무난해. 커피 마시며 쉬었다 가기 좋고 아침 일정에도 잘 맞아.", "menus": ["팬케이크", "브런치 플레이트", "커피"], "tips": ["카페 휴식", "아침/브런치"], "query": "heys Osaka cafe"}, {"area": "숙소 근처", "category": "베이커리", "name": "Paris-h", "rating": 4.4, "summary": "오사카에서 유명한 프렌치 계열 베이커리.", "detail": "빵 좋아하면 넣어둘 만한 인기 베이커리야. 식사빵부터 개성 있는 페이스트리까지 다양해서 테이크아웃으로도 좋음.", "menus": ["페이스트리", "식사빵", "구움과자"], "tips": ["빵 좋아하면 추천", "테이크아웃 가능"], "query": "Paris-h Osaka bakery"}, {"area": "숙소 근처", "category": "일식·텐푸라", "name": "요타로 본점", "rating": 4.5, "summary": "텐푸라와 명물 도미밥으로 알려진 정통 일식집.", "detail": "텐푸라와 도미밥이 대표인 정통 일식집이야. 차분한 한 끼를 먹고 싶을 때 좋고, 도미밥이 특히 유명해서 명물 먹고 싶으면 우선순위 높음.", "menus": ["텐푸라", "도미밥", "일식 코스"], "tips": ["차분한 식사", "도미밥 유명"], "query": "Yotaro Honten Osaka"}, {"area": "숙소 근처", "category": "이자카야·일식", "name": "上方ごちそう処 贔屓屋 中之島ダイビル店", "rating": 4.6, "summary": "회·구이·튀김 등 일본요리를 폭넓게 먹는 이자카야.", "detail": "한 가지 전문점이라기보다 여러 일본요리를 넓게 즐기기 좋은 타입이야. 일행끼리 메뉴 취향이 달라도 편하게 나눠 먹기 좋음.", "menus": ["사시미", "튀김", "구이", "이자카야 안주"], "tips": ["여럿이 가기 좋음", "메뉴 폭 넓음"], "query": "上方ごちそう処 贔屓屋 中之島ダイビル店"}, {"area": "숙소 근처", "category": "양식", "name": "Lumiere", "rating": 4.4, "summary": "수제 햄버그 등 일본식 양식 메뉴 중심.", "detail": "일식보다 좀 더 익숙한 양식 메뉴가 당길 때 보기 좋은 곳이야. 햄버그 같은 고기 메뉴가 메인이라 무난한 한 끼용으로 좋음.", "menus": ["수제 햄버그", "양식 런치"], "tips": ["고기/양식", "무난한 식사"], "query": "Lumiere Nakanoshima Osaka"}, {"area": "숙소 근처", "category": "철판주점", "name": "鉄板酒場 粋酔", "rating": 4.7, "summary": "철판 고기·호르몬을 캐주얼하게 즐기는 철판주점.", "detail": "격식 있는 코스형 철판구이보다는 편하게 여러 철판요리를 시켜 먹는 분위기야. 늦은 저녁이나 술안주 스타일로도 괜찮음.", "menus": ["철판 고기", "호르몬", "철판 안주"], "tips": ["캐주얼 철판요리", "저녁 술자리"], "query": "鉄板酒場 粋酔 Osaka"}, {"area": "숙소 근처", "category": "철판구이", "name": "테판야키 타이엔", "rating": 4.7, "summary": "와규·오마르새우 코스를 즐길 수 있는 철판구이집.", "detail": "프렌치 출신 셰프가 운영하는 철판구이집. 런치 3,000엔에 오마르새우+해산물 1,700엔 추가하는 4,700엔 조합이 특히 좋아 보였고, 저녁은 와규·해산물 코스가 강점이야.", "menus": ["타이엔 런치 ¥3,000", "오마르새우+해산물 추가 +¥1,700", "와규+오마르새우 디너"], "tips": ["런치 가성비 좋음", "오마르새우=바닷가재"], "query": "鉄板焼き 太縁 大阪"}, {"area": "숙소 근처", "category": "야키토리·가마메시", "name": "쿠치부네", "rating": 4.8, "summary": "야키토리와 가마메시를 함께 즐기는 인기 저녁집.", "detail": "야키토리와 솥밥을 같이 먹는 스타일의 식당이야. 유자향 새우 가마메시가 눈에 띄었고, 여러 종류의 가마메시가 있어 저녁 식사 겸 술 한잔하기 좋음.", "menus": ["유자향 새우 가마메시", "와규 스키야키 가마메시", "야키토리"], "tips": ["가마메시는 먼저 주문", "저녁용 추천"], "query": "焼鳥と釜めし くちぶね 大阪"}, {"area": "숙소 근처", "category": "라멘·마제소바", "name": "MAREN Higobashi", "rating": 4.8, "summary": "마제소바와 라멘을 편하게 즐길 수 있는 면 전문점.", "detail": "코스요리 말고 빠르게 한 끼 해결하고 싶을 때 좋은 후보야. 라멘·마제소바 위주라 일정 중간에 넣기 편하고 평점도 높았어.", "menus": ["마제소바", "라멘", "차슈 토핑"], "tips": ["가볍고 빠른 식사", "면요리"], "query": "MAREN Higobashi"}, {"area": "숙소 근처", "category": "제과점", "name": "파티셰리 몽쉐르 도지마 본점", "rating": 4.1, "summary": "도지마롤 본점으로 유명한 디저트 가게.", "detail": "부드러운 생크림 롤케이크로 유명한 도지마롤 본점이야. 근처 지나가면 기념 디저트 사기 좋은 곳.", "menus": ["도지마롤", "케이크", "디저트"], "tips": ["기념 디저트", "테이크아웃"], "query": "Patisserie Moncher Dojima Main Store"}, {"area": "숙소 근처", "category": "제과점·카페", "name": "PHILO&CO.", "rating": 4.3, "summary": "케이크와 구움과자가 좋은 디저트 가게.", "detail": "조용히 디저트 먹기 좋은 느낌의 제과점·카페야. 케이크, 구움과자 좋아하면 저장해둘 만한 후보.", "menus": ["케이크", "구움과자", "디저트"], "tips": ["디저트용", "스위츠 좋아하면 추천"], "query": "PHILO&CO. Osaka"}, {"area": "숙소 근처", "category": "피자", "name": "La Pizza Napoletana Regalo", "rating": 4.7, "summary": "정통 나폴리 피자를 먹기 좋은 인기 피자집.", "detail": "피자 좋아하면 숙소 근처에서 꽤 강력한 후보야. 정통 나폴리 스타일 피자를 메인으로 해서 만족도 높아 보였음.", "menus": ["마르게리타", "나폴리 피자", "피자 런치"], "tips": ["피자 땡길 때 강추", "평점 높음"], "query": "La Pizza Napoletana Regalo Osaka"}, {"area": "오사카역·우메다", "category": "쇼콜라·카페", "name": "쇼콜라티에 팔레 도르 오사카점", "rating": 4.4, "summary": "초콜릿이 메인인 고급 디저트 살롱.", "detail": "우메다에서 초콜릿 디저트 제대로 먹고 싶을 때 좋은 곳이야. 초콜릿 파르페나 계절 디저트 좋아하면 따로 저장할 가치 있음.", "menus": ["초콜릿 파르페", "계절 파르페", "쇼콜라"], "tips": ["초콜릿 디저트", "우메다 디저트"], "query": "ショコラティエ パレ ド オール 大阪"}, {"area": "오사카역·우메다", "category": "비어홀·이탈리안", "name": "Flander's Tale", "rating": 4.6, "summary": "맥주 종류가 많고 분위기 좋은 비어레스토랑.", "detail": "이탈리안 느낌 메뉴와 맥주를 함께 즐기기 좋은 곳이야. 오사카역 근처에서 가볍게 술 겸 식사하기 괜찮아 보여.", "menus": ["수제맥주", "이탈리안 요리", "안주류"], "tips": ["맥주 좋아하면 추천", "역 근처"], "query": "Flander's Tale Osaka"}, {"area": "오사카역·우메다", "category": "이탈리안", "name": "パパミラノ 阪急グランドビル店", "rating": 4.0, "summary": "27층 전망과 함께 즐기는 이탈리안 레스토랑.", "detail": "우메다에서 전망 보며 식사하고 싶을 때 괜찮은 선택지야. 파스타·고기요리 같은 이탈리안 메뉴를 무난하게 먹기 좋음.", "menus": ["파스타", "고기요리", "이탈리안 코스"], "tips": ["전망 포인트", "데이트 느낌"], "query": "パパミラノ 阪急グランドビル店"}, {"area": "오사카역·우메다", "category": "인도요리", "name": "DIWALI, Indian Restaurant", "rating": 4.7, "summary": "커리·난·탄두리를 즐길 수 있는 인도요리집.", "detail": "오사카역 근처에서 인도요리 먹고 싶을 때 보기 좋은 곳이야. 향신료 있는 음식 당기면 색다른 선택지로 괜찮음.", "menus": ["커리", "난", "탄두리"], "tips": ["이국적인 메뉴", "오사카역 근처"], "query": "DIWALI Indian Restaurant Osaka"}, {"area": "오사카역·우메다", "category": "중식·사천요리", "name": "진마파두부 루쿠아일레 오사카점", "rating": 4.3, "summary": "정통 사천식 마파두부가 대표인 중식집.", "detail": "루쿠아 이레에 있어서 접근성이 좋고, 마파두부 좋아하면 꽤 끌리는 후보야. 매콤한 중식 한 끼 먹고 싶을 때 좋음.", "menus": ["마파두부", "사천요리", "중식 정식"], "tips": ["매콤한 중식", "루쿠아 이레"], "query": "陳麻婆豆腐 ルクアイーレ大阪店"}, {"area": "오사카역·우메다", "category": "일식 파스타", "name": "Odashimon HEP FIVE", "rating": 4.7, "summary": "다시 베이스 일본식 파스타와 두부 뷔페가 특징.", "detail": "HEP FIVE 안에서 식사 후보로 괜찮은 곳이야. 일본식 육수 감성 파스타라 일반 이탈리안이랑 조금 다른 느낌을 기대할 수 있음.", "menus": ["일식 파스타", "두부 뷔페", "세트 메뉴"], "tips": ["HEP FIVE 내부", "색다른 파스타"], "query": "Odashimon HEP FIVE Osaka"}, {"area": "오사카역·우메다", "category": "모던 이자카야", "name": "Hachikome", "rating": 4.6, "summary": "세련된 분위기의 일식·이자카야 스타일 식당.", "detail": "우메다에서 분위기 있게 일식 계열 먹고 싶을 때 보기 좋은 후보야. 런치·디너 모두 활용 가능한 느낌.", "menus": ["일식 소품요리", "이자카야 메뉴", "런치"], "tips": ["분위기 좋음", "데이트/저녁"], "query": "Hachikome Osaka"}, {"area": "오사카역·우메다", "category": "야키니쿠", "name": "야키니쿠 고리짱 우메다 본점", "rating": 4.9, "summary": "흑모와규·우설·하라미가 인기인 우메다 야키니쿠집.", "detail": "고기 먹는 날이면 우메다 쪽에서 강하게 넣어둘 만한 후보야. 평점도 높고 우설, 갈비 같은 메뉴가 특히 눈에 띄었어.", "menus": ["두꺼운 우설", "흑모와규", "하라미", "갈비"], "tips": ["고기 메인 저녁", "리뷰/평점 강함"], "query": "焼肉ごりちゃん 梅田本店"}, {"area": "혼마치·요도야바시", "category": "과일카페", "name": "Fruit Cafe Hikari", "rating": 4.6, "summary": "제철 과일을 듬뿍 올린 파르페가 대표인 과일카페.", "detail": "이번 오사카 디저트 후보 중 콩콩이 픽에 가장 가까운 곳이야. 딸기 좋아하면 우선순위 높고, 과일 파르페 비주얼이 강점임.", "menus": ["딸기 파르페", "계절 과일 파르페"], "tips": ["콩콩이 픽 ❤️", "딸기 파르페 강추"], "query": "Fruit Cafe Hikari Osaka"}, {"area": "신사이바시", "category": "크레페·디저트", "name": "타바네노시 오사카 신사이바시점", "rating": 4.7, "summary": "말차·딸기 계열이 강한 비주얼 좋은 일본식 크레페집.", "detail": "신사이바시에서 디저트 간식으로 들르기 좋은 곳이야. 일본풍 디저트 느낌이 있고 사진 찍기 좋은 메뉴가 많음.", "menus": ["말차 크레페", "딸기 크레페", "브륄레 크레페"], "tips": ["비주얼 디저트", "쇼핑 중 들르기 좋음"], "query": "タバネノシ 大阪 心斎橋"}, {"area": "신사이바시", "category": "디저트카페", "name": "COLONY by EQI Shinsaibashi", "rating": 4.8, "summary": "딸기 케이크·팬케이크 등 선택지가 많은 디저트카페.", "detail": "신사이바시에서 늦은 디저트까지 가능하고 메뉴 선택지도 넓은 편이야. 일행별 취향이 달라도 맞추기 좋은 타입.", "menus": ["딸기 케이크", "팬케이크", "디저트 플레이트"], "tips": ["늦은 디저트 가능", "선택지 많음"], "query": "COLONY by EQI Shinsaibashi"}, {"area": "신사이바시", "category": "고베규·철판구이", "name": "와노미야 북신사이바시점", "rating": 4.9, "summary": "고베규 스테이크·철판구이가 메인인 고기집.", "detail": "신사이바시에서 ‘오늘은 고기’ 하고 정했을 때 우선순위 높은 후보야. 데이트 식사로도 잘 어울리는 느낌.", "menus": ["고베규 스테이크", "철판구이 코스"], "tips": ["고기 메인", "분위기 있는 식사"], "query": "わの宮 北心斎橋店"}, {"area": "신사이바시", "category": "규카츠", "name": "규카츠 요사쿠라", "rating": 5.0, "summary": "바삭한 겉과 촉촉한 속이 매력인 규카츠 전문점.", "detail": "신사이바시 근처에서 고기 메뉴 중 꽤 강한 후보야. 스테이크와는 다른 매력으로 규카츠 좋아하면 꼭 저장할 만함.", "menus": ["규카츠 정식", "규카츠"], "tips": ["평점 매우 높음", "고기 좋아하면 추천"], "query": "牛カツ 夜桜 大阪 心斎橋"}, {"area": "신사이바시", "category": "카레", "name": "Kusaka Curry", "rating": 4.7, "summary": "진한 풍미의 일본식 카레를 즐길 수 있는 카레집.", "detail": "긴 코스나 디저트 사이에서 빠르게 한 끼 먹기 좋은 메뉴야. 일본식 카레 좋아하면 일정 중간에 넣기 편함.", "menus": ["일본식 카레", "토핑 카레"], "tips": ["빠른 한 끼", "카레 좋아하면 추천"], "query": "Kusaka Curry Osaka"}, {"area": "신사이바시", "category": "몬자야키", "name": "츠키시마 몬자 오코게 신사이바시", "rating": 4.9, "summary": "명란·해산물 등 다양한 몬자야키를 즐기는 전문점.", "detail": "오코노미야키와는 또 다른 철판요리를 먹어보고 싶을 때 좋은 선택지야. 여럿이 같이 앉아 나눠 먹는 재미가 큰 편.", "menus": ["명란 몬자", "해산물 몬자", "철판 사이드"], "tips": ["여럿이 가기 좋음", "색다른 철판요리"], "query": "月島もんじゃ おこげ 心斎橋"}, {"area": "아리마온천", "category": "이탈리안·피자", "name": "PORCO Aglio e olio", "rating": 4.8, "summary": "피자·파스타 중심의 작은 이탈리안 레스토랑.", "detail": "아리마온천에서 색다르게 이탈리안 먹고 싶을 때 좋은 후보야. 작은 가게 분위기로 피자와 파스타가 메인.", "menus": ["피자", "파스타"], "tips": ["온천가 이탈리안", "평점 높음"], "query": "PORCO Aglio e olio Arima"}, {"area": "아리마온천", "category": "한식", "name": "有馬韓定食 李家", "rating": 4.4, "summary": "한식 정식과 냉면 등을 먹을 수 있는 아리마 한식집.", "detail": "아리마온천에서 한식이 당길 때 보기 좋은 곳이야. 정식 스타일로 무난하게 먹기 좋고, 일본식이 지겨울 때 대안이 됨.", "menus": ["한정식", "냉면", "한식 메뉴"], "tips": ["한식 땡길 때", "일식 지칠 때 대안"], "query": "有馬韓定食 李家"}, {"area": "아리마온천", "category": "가마메시", "name": "구쓰로기야 くつろぎ家", "rating": 4.4, "summary": "도미·연어·문어·장어 가마메시가 인기인 솥밥집.", "detail": "아리마온천에서 꽤 유명한 가마메시집이라 솥밥 좋아하면 저장 가치가 높아. 온천 거리 분위기랑도 잘 어울리는 메뉴야.", "menus": ["도미 가마메시", "연어 가마메시", "장어 가마메시"], "tips": ["아리마 인기집", "가마메시 대표"], "query": "くつろぎ家 Arima"}, {"area": "아리마온천", "category": "오코노미야키·철판", "name": "Ikkyu 一休", "rating": 4.0, "summary": "오코노미야키·교자 중심으로 편하게 먹는 철판요리집.", "detail": "아리마온천 거리에서 부담 없이 한 끼 하기 좋은 편한 식당이야. 오코노미야키나 철판요리 좋아하면 후보로 괜찮음.", "menus": ["오코노미야키", "교자", "철판요리"], "tips": ["편한 식사", "철판 메뉴"], "query": "Ikkyu 一休 Arima"}, {"area": "아리마온천", "category": "카페", "name": "아리마 보텐 베카시누", "rating": 4.4, "summary": "아리마 골목의 분위기 좋은 작은 카페.", "detail": "온천거리 산책하다 쉬어가기 좋은 카페 느낌이야. 조용하고 소소한 분위기의 카페 후보로 넣기 좋음.", "menus": ["커피", "디저트", "카페 메뉴"], "tips": ["카페 휴식", "골목 감성"], "query": "Becassine Arima"}, {"area": "아리마온천", "category": "카페·런치", "name": "Fish House Cafe", "rating": 4.5, "summary": "루로우판·키마카레와 디저트를 함께 즐길 수 있는 카페.", "detail": "단순 카페가 아니라 식사 메뉴도 꽤 괜찮아 보여서 점심 후보로도 쓸 만해. 디저트까지 같이 해결하기 좋은 타입.", "menus": ["루로우판", "키마카레", "치즈케이크", "소프트크림"], "tips": ["식사+디저트 가능", "점심 후보"], "query": "Fish House Cafe Arima"}, {"area": "아리마온천", "category": "햄버거·카페", "name": "SABOR", "rating": 4.1, "summary": "버거와 카페 메뉴를 즐길 수 있는 캐주얼 가게.", "detail": "햄버거나 가벼운 식사류가 당길 때 보기 좋은 후보야. 색다르게 서양식 한 끼가 필요할 때 무난함.", "menus": ["버거", "카페 메뉴"], "tips": ["캐주얼", "가벼운 식사"], "query": "SABOR Arima"}, {"area": "아리마온천", "category": "젤라또", "name": "아리마 젤라떼리아 스타지오네", "rating": 4.2, "summary": "아리마에서 젤라또 먹기 좋은 대표 디저트 가게.", "detail": "온천 마치고 달달한 거 먹고 싶을 때 딱 어울리는 젤라또집이야. 산책하면서 먹기 좋은 디저트 후보.", "menus": ["젤라또", "아이스 디저트"], "tips": ["산책 디저트", "젤라또 대표"], "query": "Arima Gelateria Stagione"}, {"area": "아리마온천", "category": "라멘", "name": "Arima Ramen Seiryu-i", "rating": 4.3, "summary": "아리마온천 근처의 일본식 라멘 전문점.", "detail": "온천 근처에서 따뜻한 면 한 그릇 먹고 싶을 때 넣기 좋은 곳이야. 부담 없는 식사 후보로 괜찮음.", "menus": ["라멘", "면요리"], "tips": ["따뜻한 한 끼", "라멘"], "query": "Arima Ramen Seiryu-i"}, {"area": "아리마온천", "category": "스키야키", "name": "すき焼き ひょうたん", "rating": 4.7, "summary": "직원이 고기를 구워주는 스타일의 스키야키 전문점.", "detail": "아리마에서 고기 중심으로 든든하게 먹고 싶을 때 꽤 좋은 후보야. 스키야키 전문이라 한 끼 만족감 높을 듯.", "menus": ["스키야키"], "tips": ["고기 메인", "점심·저녁 둘 다 가능"], "query": "すき焼き ひょうたん Arima"}, {"area": "아리마온천", "category": "일본 디저트", "name": "Secret Mitarashi Dango", "rating": 4.4, "summary": "온천거리에서 미타라시 당고를 먹기 좋은 디저트집.", "detail": "아리마온천 산책 중 간식으로 딱 어울리는 느낌이야. 당고 좋아하면 저장해두기 좋은 일본식 디저트 후보.", "menus": ["미타라시 당고"], "tips": ["간식용", "온천거리 디저트"], "query": "Secret Mitarashi Dango Arima"}, {"area": "아리마온천", "category": "오코노미야키·철판구이", "name": "Kinchan", "rating": 4.3, "summary": "오코노미야키와 야키소바를 즐길 수 있는 로컬 철판집.", "detail": "아리마에서 로컬 느낌으로 편하게 먹기 좋은 오코노미야키집이야. 철판요리 좋아하면 무난한 한 끼 후보.", "menus": ["오코노미야키", "산초 야키소바"], "tips": ["로컬 느낌", "철판요리"], "query": "お好み焼き きんちゃん Arima"}];
-const tabsOrder = ["전체","숙소 근처","오사카역·우메다","신사이바시","혼마치·요도야바시","아리마온천"];
-let filter = "전체";
-let query = "";
-let currentIndex = 0;
-
-const grid = document.getElementById("grid");
-const tabs = document.getElementById("tabs");
-const count = document.getElementById("count");
-const detail = document.getElementById("detail");
-const panel = document.getElementById("panel");
-const backdrop = document.getElementById("backdrop");
-
-function esc(s){
-  return String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-}
-function mapsUrl(q){
-  return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
-}
-function renderTabs(){
-  tabs.innerHTML = tabsOrder.map(t => `<button class="tab ${t===filter?'active':''}" data-tab="${esc(t)}">${esc(t)}</button>`).join("");
-  tabs.querySelectorAll("button").forEach(btn => {
-    btn.onclick = () => {
-      filter = btn.dataset.tab;
-      renderList();
-    };
-  });
-}
-function showDetail(index, mobileOpen=true){
-  currentIndex = index;
-  const p = places[index];
-  const menusHtml = p.menus.map(m => `<div class="menuitem"><span>${esc(m)}</span><span>추천</span></div>`).join("");
-  const tipsHtml = p.tips.map(t => `<span class="tipchip">${esc(t)}</span>`).join("");
-  detail.innerHTML = `
-    <div class="banner">
-      <div class="bannerbox">
-        <div class="pin">📍</div>
-        <div>
-          <div class="bannerarea">${esc(p.area)}</div>
-          <div class="bannercat">${esc(p.category)}</div>
+<div id="addModal" class="modalback" aria-hidden="true">
+  <div class="modal">
+    <div class="modalhead">
+      <div>
+        <h2>✨ Gemini로 맛집 추가</h2>
+        <div class="modaldesc">가게 이름만 넣어도 Gemini가 Google Maps에서 찾아서 평점·주소·영업정보·이용객 평가·대표메뉴를 정리해. 동명이인이 걱정되면 지역/힌트를 같이 적어줘.</div>
+      </div>
+      <button id="closeAdd" class="xbtn">×</button>
+    </div>
+    <form id="addForm">
+      <div class="fields">
+        <div class="field full">
+          <label>가게 이름 *</label>
+          <input id="placeName" required maxlength="120" placeholder="예: MEISSEN Café / すき焼き ひょうたん">
+        </div>
+        <div class="field">
+          <label>지역</label>
+          <select id="areaHint">
+            <option value="자동">자동으로 판단</option>
+            <option>숙소 근처</option>
+            <option>오사카역·우메다</option>
+            <option>신사이바시</option>
+            <option>혼마치·요도야바시</option>
+            <option>아리마온천</option>
+            <option>기타</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>분류 힌트 (선택)</label>
+          <input id="categoryHint" maxlength="60" placeholder="예: 카페 / 야키니쿠">
+        </div>
+        <div class="field full">
+          <label>위치·지점 힌트 (선택)</label>
+          <input id="locationHint" maxlength="160" placeholder="예: 한큐 우메다 본점 7층 / 아리마온천역 근처">
+        </div>
+        <div class="field full">
+          <label>Google Maps 링크 (선택)</label>
+          <input id="mapsUrl" type="url" placeholder="https://maps.app.goo.gl/...">
+          <div class="hint">정확한 지점 링크가 있으면 동명이인 방지에 도움이 돼.</div>
+        </div>
+        <div class="field full">
+          <label>우리 메모 (선택)</label>
+          <textarea id="userNote" maxlength="160" placeholder="예: 콩콩이 딸기파르페 픽 / 저녁 후보"></textarea>
+        </div>
+        <div class="field full">
+          <label>추가한 사람 (선택)</label>
+          <input id="submittedBy" maxlength="30" placeholder="맹구 / 콩콩">
         </div>
       </div>
+      <button id="submitAdd" class="submit" type="submit">Gemini로 찾아서 추가</button>
+      <div id="addStatus" class="status"></div>
+    </form>
+  </div>
+</div>
+
+<script src="./config.js"></script>
+<script>
+const staticPlaces = [{"area": "숙소 근처", "category": "샌드위치·카페", "name": "GURFA", "rating": 4.7, "summary": "쿠바샌드·핫샌드 중심의 캐주얼 브런치 가게.", "detail": "숙소 근처에서 가볍게 아침이나 점심 먹기 좋은 샌드위치 가게야. 브런치 느낌으로 편하게 들르기 좋고 일정 시작 전에 가볍게 배 채우기 좋음.", "menus": ["쿠바샌드", "핫샌드", "커피"], "tips": ["브런치용", "가볍게 먹기 좋음"], "query": "GURFA Osaka"}, {"area": "숙소 근처", "category": "카페·브런치", "name": "heys", "rating": 4.6, "summary": "커피·팬케이크·브런치 메뉴가 있는 카페.", "detail": "팬케이크와 브런치 메뉴가 있는 카페라 숙소 근처 카페 후보로 무난해. 커피 마시며 쉬었다 가기 좋고 아침 일정에도 잘 맞아.", "menus": ["팬케이크", "브런치 플레이트", "커피"], "tips": ["카페 휴식", "아침/브런치"], "query": "heys Osaka cafe"}, {"area": "숙소 근처", "category": "베이커리", "name": "Paris-h", "rating": 4.4, "summary": "오사카에서 유명한 프렌치 계열 베이커리.", "detail": "빵 좋아하면 넣어둘 만한 인기 베이커리야. 식사빵부터 개성 있는 페이스트리까지 다양해서 테이크아웃으로도 좋음.", "menus": ["페이스트리", "식사빵", "구움과자"], "tips": ["빵 좋아하면 추천", "테이크아웃 가능"], "query": "Paris-h Osaka bakery"}, {"area": "숙소 근처", "category": "일식·텐푸라", "name": "요타로 본점", "rating": 4.5, "summary": "텐푸라와 명물 도미밥으로 알려진 정통 일식집.", "detail": "텐푸라와 도미밥이 대표인 정통 일식집이야. 차분한 한 끼를 먹고 싶을 때 좋고, 도미밥이 특히 유명해서 명물 먹고 싶으면 우선순위 높음.", "menus": ["텐푸라", "도미밥", "일식 코스"], "tips": ["차분한 식사", "도미밥 유명"], "query": "Yotaro Honten Osaka"}, {"area": "숙소 근처", "category": "이자카야·일식", "name": "上方ごちそう処 贔屓屋 中之島ダイビル店", "rating": 4.6, "summary": "회·구이·튀김 등 일본요리를 폭넓게 먹는 이자카야.", "detail": "한 가지 전문점이라기보다 여러 일본요리를 넓게 즐기기 좋은 타입이야. 일행끼리 메뉴 취향이 달라도 편하게 나눠 먹기 좋음.", "menus": ["사시미", "튀김", "구이", "이자카야 안주"], "tips": ["여럿이 가기 좋음", "메뉴 폭 넓음"], "query": "上方ごちそう処 贔屓屋 中之島ダイビル店"}, {"area": "숙소 근처", "category": "양식", "name": "Lumiere", "rating": 4.4, "summary": "수제 햄버그 등 일본식 양식 메뉴 중심.", "detail": "일식보다 좀 더 익숙한 양식 메뉴가 당길 때 보기 좋은 곳이야. 햄버그 같은 고기 메뉴가 메인이라 무난한 한 끼용으로 좋음.", "menus": ["수제 햄버그", "양식 런치"], "tips": ["고기/양식", "무난한 식사"], "query": "Lumiere Nakanoshima Osaka"}, {"area": "숙소 근처", "category": "철판주점", "name": "鉄板酒場 粋酔", "rating": 4.7, "summary": "철판 고기·호르몬을 캐주얼하게 즐기는 철판주점.", "detail": "격식 있는 코스형 철판구이보다는 편하게 여러 철판요리를 시켜 먹는 분위기야. 늦은 저녁이나 술안주 스타일로도 괜찮음.", "menus": ["철판 고기", "호르몬", "철판 안주"], "tips": ["캐주얼 철판요리", "저녁 술자리"], "query": "鉄板酒場 粋酔 Osaka"}, {"area": "숙소 근처", "category": "철판구이", "name": "테판야키 타이엔", "rating": 4.7, "summary": "와규·오마르새우 코스를 즐길 수 있는 철판구이집.", "detail": "프렌치 출신 셰프가 운영하는 철판구이집. 런치 3,000엔에 오마르새우+해산물 1,700엔 추가하는 4,700엔 조합이 특히 좋아 보였고, 저녁은 와규·해산물 코스가 강점이야.", "menus": ["타이엔 런치 ¥3,000", "오마르새우+해산물 추가 +¥1,700", "와규+오마르새우 디너"], "tips": ["런치 가성비 좋음", "오마르새우=바닷가재"], "query": "鉄板焼き 太縁 大阪"}, {"area": "숙소 근처", "category": "야키토리·가마메시", "name": "쿠치부네", "rating": 4.8, "summary": "야키토리와 가마메시를 함께 즐기는 인기 저녁집.", "detail": "야키토리와 솥밥을 같이 먹는 스타일의 식당이야. 유자향 새우 가마메시가 눈에 띄었고, 여러 종류의 가마메시가 있어 저녁 식사 겸 술 한잔하기 좋음.", "menus": ["유자향 새우 가마메시", "와규 스키야키 가마메시", "야키토리"], "tips": ["가마메시는 먼저 주문", "저녁용 추천"], "query": "焼鳥と釜めし くちぶね 大阪"}, {"area": "숙소 근처", "category": "라멘·마제소바", "name": "MAREN Higobashi", "rating": 4.8, "summary": "마제소바와 라멘을 편하게 즐길 수 있는 면 전문점.", "detail": "코스요리 말고 빠르게 한 끼 해결하고 싶을 때 좋은 후보야. 라멘·마제소바 위주라 일정 중간에 넣기 편하고 평점도 높았어.", "menus": ["마제소바", "라멘", "차슈 토핑"], "tips": ["가볍고 빠른 식사", "면요리"], "query": "MAREN Higobashi"}, {"area": "숙소 근처", "category": "제과점", "name": "파티셰리 몽쉐르 도지마 본점", "rating": 4.1, "summary": "도지마롤 본점으로 유명한 디저트 가게.", "detail": "부드러운 생크림 롤케이크로 유명한 도지마롤 본점이야. 근처 지나가면 기념 디저트 사기 좋은 곳.", "menus": ["도지마롤", "케이크", "디저트"], "tips": ["기념 디저트", "테이크아웃"], "query": "Patisserie Moncher Dojima Main Store"}, {"area": "숙소 근처", "category": "제과점·카페", "name": "PHILO&CO.", "rating": 4.3, "summary": "케이크와 구움과자가 좋은 디저트 가게.", "detail": "조용히 디저트 먹기 좋은 느낌의 제과점·카페야. 케이크, 구움과자 좋아하면 저장해둘 만한 후보.", "menus": ["케이크", "구움과자", "디저트"], "tips": ["디저트용", "스위츠 좋아하면 추천"], "query": "PHILO&CO. Osaka"}, {"area": "숙소 근처", "category": "피자", "name": "La Pizza Napoletana Regalo", "rating": 4.7, "summary": "정통 나폴리 피자를 먹기 좋은 인기 피자집.", "detail": "피자 좋아하면 숙소 근처에서 꽤 강력한 후보야. 정통 나폴리 스타일 피자를 메인으로 해서 만족도 높아 보였음.", "menus": ["마르게리타", "나폴리 피자", "피자 런치"], "tips": ["피자 땡길 때 강추", "평점 높음"], "query": "La Pizza Napoletana Regalo Osaka"}, {"area": "오사카역·우메다", "category": "쇼콜라·카페", "name": "쇼콜라티에 팔레 도르 오사카점", "rating": 4.4, "summary": "초콜릿이 메인인 고급 디저트 살롱.", "detail": "우메다에서 초콜릿 디저트 제대로 먹고 싶을 때 좋은 곳이야. 초콜릿 파르페나 계절 디저트 좋아하면 따로 저장할 가치 있음.", "menus": ["초콜릿 파르페", "계절 파르페", "쇼콜라"], "tips": ["초콜릿 디저트", "우메다 디저트"], "query": "ショコラティエ パレ ド オール 大阪"}, {"area": "오사카역·우메다", "category": "비어홀·이탈리안", "name": "Flander's Tale", "rating": 4.6, "summary": "맥주 종류가 많고 분위기 좋은 비어레스토랑.", "detail": "이탈리안 느낌 메뉴와 맥주를 함께 즐기기 좋은 곳이야. 오사카역 근처에서 가볍게 술 겸 식사하기 괜찮아 보여.", "menus": ["수제맥주", "이탈리안 요리", "안주류"], "tips": ["맥주 좋아하면 추천", "역 근처"], "query": "Flander's Tale Osaka"}, {"area": "오사카역·우메다", "category": "이탈리안", "name": "パパミラノ 阪急グランドビル店", "rating": 4.0, "summary": "27층 전망과 함께 즐기는 이탈리안 레스토랑.", "detail": "우메다에서 전망 보며 식사하고 싶을 때 괜찮은 선택지야. 파스타·고기요리 같은 이탈리안 메뉴를 무난하게 먹기 좋음.", "menus": ["파스타", "고기요리", "이탈리안 코스"], "tips": ["전망 포인트", "데이트 느낌"], "query": "パパミラノ 阪急グランドビル店"}, {"area": "오사카역·우메다", "category": "인도요리", "name": "DIWALI, Indian Restaurant", "rating": 4.7, "summary": "커리·난·탄두리를 즐길 수 있는 인도요리집.", "detail": "오사카역 근처에서 인도요리 먹고 싶을 때 보기 좋은 곳이야. 향신료 있는 음식 당기면 색다른 선택지로 괜찮음.", "menus": ["커리", "난", "탄두리"], "tips": ["이국적인 메뉴", "오사카역 근처"], "query": "DIWALI Indian Restaurant Osaka"}, {"area": "오사카역·우메다", "category": "중식·사천요리", "name": "진마파두부 루쿠아일레 오사카점", "rating": 4.3, "summary": "정통 사천식 마파두부가 대표인 중식집.", "detail": "루쿠아 이레에 있어서 접근성이 좋고, 마파두부 좋아하면 꽤 끌리는 후보야. 매콤한 중식 한 끼 먹고 싶을 때 좋음.", "menus": ["마파두부", "사천요리", "중식 정식"], "tips": ["매콤한 중식", "루쿠아 이레"], "query": "陳麻婆豆腐 ルクアイーレ大阪店"}, {"area": "오사카역·우메다", "category": "일식 파스타", "name": "Odashimon HEP FIVE", "rating": 4.7, "summary": "다시 베이스 일본식 파스타와 두부 뷔페가 특징.", "detail": "HEP FIVE 안에서 식사 후보로 괜찮은 곳이야. 일본식 육수 감성 파스타라 일반 이탈리안이랑 조금 다른 느낌을 기대할 수 있음.", "menus": ["일식 파스타", "두부 뷔페", "세트 메뉴"], "tips": ["HEP FIVE 내부", "색다른 파스타"], "query": "Odashimon HEP FIVE Osaka"}, {"area": "오사카역·우메다", "category": "모던 이자카야", "name": "Hachikome", "rating": 4.6, "summary": "세련된 분위기의 일식·이자카야 스타일 식당.", "detail": "우메다에서 분위기 있게 일식 계열 먹고 싶을 때 보기 좋은 후보야. 런치·디너 모두 활용 가능한 느낌.", "menus": ["일식 소품요리", "이자카야 메뉴", "런치"], "tips": ["분위기 좋음", "데이트/저녁"], "query": "Hachikome Osaka"}, {"area": "오사카역·우메다", "category": "야키니쿠", "name": "야키니쿠 고리짱 우메다 본점", "rating": 4.9, "summary": "흑모와규·우설·하라미가 인기인 우메다 야키니쿠집.", "detail": "고기 먹는 날이면 우메다 쪽에서 강하게 넣어둘 만한 후보야. 평점도 높고 우설, 갈비 같은 메뉴가 특히 눈에 띄었어.", "menus": ["두꺼운 우설", "흑모와규", "하라미", "갈비"], "tips": ["고기 메인 저녁", "리뷰/평점 강함"], "query": "焼肉ごりちゃん 梅田本店"}, {"area": "혼마치·요도야바시", "category": "과일카페", "name": "Fruit Cafe Hikari", "rating": 4.6, "summary": "제철 과일을 듬뿍 올린 파르페가 대표인 과일카페.", "detail": "이번 오사카 디저트 후보 중 콩콩이 픽에 가장 가까운 곳이야. 딸기 좋아하면 우선순위 높고, 과일 파르페 비주얼이 강점임.", "menus": ["딸기 파르페", "계절 과일 파르페"], "tips": ["콩콩이 픽 ❤️", "딸기 파르페 강추"], "query": "Fruit Cafe Hikari Osaka"}, {"area": "신사이바시", "category": "크레페·디저트", "name": "타바네노시 오사카 신사이바시점", "rating": 4.7, "summary": "말차·딸기 계열이 강한 비주얼 좋은 일본식 크레페집.", "detail": "신사이바시에서 디저트 간식으로 들르기 좋은 곳이야. 일본풍 디저트 느낌이 있고 사진 찍기 좋은 메뉴가 많음.", "menus": ["말차 크레페", "딸기 크레페", "브륄레 크레페"], "tips": ["비주얼 디저트", "쇼핑 중 들르기 좋음"], "query": "タバネノシ 大阪 心斎橋"}, {"area": "신사이바시", "category": "디저트카페", "name": "COLONY by EQI Shinsaibashi", "rating": 4.8, "summary": "딸기 케이크·팬케이크 등 선택지가 많은 디저트카페.", "detail": "신사이바시에서 늦은 디저트까지 가능하고 메뉴 선택지도 넓은 편이야. 일행별 취향이 달라도 맞추기 좋은 타입.", "menus": ["딸기 케이크", "팬케이크", "디저트 플레이트"], "tips": ["늦은 디저트 가능", "선택지 많음"], "query": "COLONY by EQI Shinsaibashi"}, {"area": "신사이바시", "category": "고베규·철판구이", "name": "와노미야 북신사이바시점", "rating": 4.9, "summary": "고베규 스테이크·철판구이가 메인인 고기집.", "detail": "신사이바시에서 ‘오늘은 고기’ 하고 정했을 때 우선순위 높은 후보야. 데이트 식사로도 잘 어울리는 느낌.", "menus": ["고베규 스테이크", "철판구이 코스"], "tips": ["고기 메인", "분위기 있는 식사"], "query": "わの宮 北心斎橋店"}, {"area": "신사이바시", "category": "규카츠", "name": "규카츠 요사쿠라", "rating": 5.0, "summary": "바삭한 겉과 촉촉한 속이 매력인 규카츠 전문점.", "detail": "신사이바시 근처에서 고기 메뉴 중 꽤 강한 후보야. 스테이크와는 다른 매력으로 규카츠 좋아하면 꼭 저장할 만함.", "menus": ["규카츠 정식", "규카츠"], "tips": ["평점 매우 높음", "고기 좋아하면 추천"], "query": "牛カツ 夜桜 大阪 心斎橋"}, {"area": "신사이바시", "category": "카레", "name": "Kusaka Curry", "rating": 4.7, "summary": "진한 풍미의 일본식 카레를 즐길 수 있는 카레집.", "detail": "긴 코스나 디저트 사이에서 빠르게 한 끼 먹기 좋은 메뉴야. 일본식 카레 좋아하면 일정 중간에 넣기 편함.", "menus": ["일본식 카레", "토핑 카레"], "tips": ["빠른 한 끼", "카레 좋아하면 추천"], "query": "Kusaka Curry Osaka"}, {"area": "신사이바시", "category": "몬자야키", "name": "츠키시마 몬자 오코게 신사이바시", "rating": 4.9, "summary": "명란·해산물 등 다양한 몬자야키를 즐기는 전문점.", "detail": "오코노미야키와는 또 다른 철판요리를 먹어보고 싶을 때 좋은 선택지야. 여럿이 같이 앉아 나눠 먹는 재미가 큰 편.", "menus": ["명란 몬자", "해산물 몬자", "철판 사이드"], "tips": ["여럿이 가기 좋음", "색다른 철판요리"], "query": "月島もんじゃ おこげ 心斎橋"}, {"area": "아리마온천", "category": "이탈리안·피자", "name": "PORCO Aglio e olio", "rating": 4.8, "summary": "피자·파스타 중심의 작은 이탈리안 레스토랑.", "detail": "아리마온천에서 색다르게 이탈리안 먹고 싶을 때 좋은 후보야. 작은 가게 분위기로 피자와 파스타가 메인.", "menus": ["피자", "파스타"], "tips": ["온천가 이탈리안", "평점 높음"], "query": "PORCO Aglio e olio Arima"}, {"area": "아리마온천", "category": "한식", "name": "有馬韓定食 李家", "rating": 4.4, "summary": "한식 정식과 냉면 등을 먹을 수 있는 아리마 한식집.", "detail": "아리마온천에서 한식이 당길 때 보기 좋은 곳이야. 정식 스타일로 무난하게 먹기 좋고, 일본식이 지겨울 때 대안이 됨.", "menus": ["한정식", "냉면", "한식 메뉴"], "tips": ["한식 땡길 때", "일식 지칠 때 대안"], "query": "有馬韓定食 李家"}, {"area": "아리마온천", "category": "가마메시", "name": "구쓰로기야 くつろぎ家", "rating": 4.4, "summary": "도미·연어·문어·장어 가마메시가 인기인 솥밥집.", "detail": "아리마온천에서 꽤 유명한 가마메시집이라 솥밥 좋아하면 저장 가치가 높아. 온천 거리 분위기랑도 잘 어울리는 메뉴야.", "menus": ["도미 가마메시", "연어 가마메시", "장어 가마메시"], "tips": ["아리마 인기집", "가마메시 대표"], "query": "くつろぎ家 Arima"}, {"area": "아리마온천", "category": "오코노미야키·철판", "name": "Ikkyu 一休", "rating": 4.0, "summary": "오코노미야키·교자 중심으로 편하게 먹는 철판요리집.", "detail": "아리마온천 거리에서 부담 없이 한 끼 하기 좋은 편한 식당이야. 오코노미야키나 철판요리 좋아하면 후보로 괜찮음.", "menus": ["오코노미야키", "교자", "철판요리"], "tips": ["편한 식사", "철판 메뉴"], "query": "Ikkyu 一休 Arima"}, {"area": "아리마온천", "category": "카페", "name": "아리마 보텐 베카시누", "rating": 4.4, "summary": "아리마 골목의 분위기 좋은 작은 카페.", "detail": "온천거리 산책하다 쉬어가기 좋은 카페 느낌이야. 조용하고 소소한 분위기의 카페 후보로 넣기 좋음.", "menus": ["커피", "디저트", "카페 메뉴"], "tips": ["카페 휴식", "골목 감성"], "query": "Becassine Arima"}, {"area": "아리마온천", "category": "카페·런치", "name": "Fish House Cafe", "rating": 4.5, "summary": "루로우판·키마카레와 디저트를 함께 즐길 수 있는 카페.", "detail": "단순 카페가 아니라 식사 메뉴도 꽤 괜찮아 보여서 점심 후보로도 쓸 만해. 디저트까지 같이 해결하기 좋은 타입.", "menus": ["루로우판", "키마카레", "치즈케이크", "소프트크림"], "tips": ["식사+디저트 가능", "점심 후보"], "query": "Fish House Cafe Arima"}, {"area": "아리마온천", "category": "햄버거·카페", "name": "SABOR", "rating": 4.1, "summary": "버거와 카페 메뉴를 즐길 수 있는 캐주얼 가게.", "detail": "햄버거나 가벼운 식사류가 당길 때 보기 좋은 후보야. 색다르게 서양식 한 끼가 필요할 때 무난함.", "menus": ["버거", "카페 메뉴"], "tips": ["캐주얼", "가벼운 식사"], "query": "SABOR Arima"}, {"area": "아리마온천", "category": "젤라또", "name": "아리마 젤라떼리아 스타지오네", "rating": 4.2, "summary": "아리마에서 젤라또 먹기 좋은 대표 디저트 가게.", "detail": "온천 마치고 달달한 거 먹고 싶을 때 딱 어울리는 젤라또집이야. 산책하면서 먹기 좋은 디저트 후보.", "menus": ["젤라또", "아이스 디저트"], "tips": ["산책 디저트", "젤라또 대표"], "query": "Arima Gelateria Stagione"}, {"area": "아리마온천", "category": "라멘", "name": "Arima Ramen Seiryu-i", "rating": 4.3, "summary": "아리마온천 근처의 일본식 라멘 전문점.", "detail": "온천 근처에서 따뜻한 면 한 그릇 먹고 싶을 때 넣기 좋은 곳이야. 부담 없는 식사 후보로 괜찮음.", "menus": ["라멘", "면요리"], "tips": ["따뜻한 한 끼", "라멘"], "query": "Arima Ramen Seiryu-i"}, {"area": "아리마온천", "category": "스키야키", "name": "すき焼き ひょうたん", "rating": 4.7, "summary": "직원이 고기를 구워주는 스타일의 스키야키 전문점.", "detail": "아리마에서 고기 중심으로 든든하게 먹고 싶을 때 꽤 좋은 후보야. 스키야키 전문이라 한 끼 만족감 높을 듯.", "menus": ["스키야키"], "tips": ["고기 메인", "점심·저녁 둘 다 가능"], "query": "すき焼き ひょうたん Arima"}, {"area": "아리마온천", "category": "일본 디저트", "name": "Secret Mitarashi Dango", "rating": 4.4, "summary": "온천거리에서 미타라시 당고를 먹기 좋은 디저트집.", "detail": "아리마온천 산책 중 간식으로 딱 어울리는 느낌이야. 당고 좋아하면 저장해두기 좋은 일본식 디저트 후보.", "menus": ["미타라시 당고"], "tips": ["간식용", "온천거리 디저트"], "query": "Secret Mitarashi Dango Arima"}, {"area": "아리마온천", "category": "오코노미야키·철판구이", "name": "Kinchan", "rating": 4.3, "summary": "오코노미야키와 야키소바를 즐길 수 있는 로컬 철판집.", "detail": "아리마에서 로컬 느낌으로 편하게 먹기 좋은 오코노미야키집이야. 철판요리 좋아하면 무난한 한 끼 후보.", "menus": ["오코노미야키", "산초 야키소바"], "tips": ["로컬 느낌", "철판요리"], "query": "お好み焼き きんちゃん Arima"}, {"area": "오사카역·우메다", "category": "카페", "name": "MEISSEN Café", "rating": 4.2, "summary": "마이센 식기에 커피·디저트가 나오는 고급스러운 백화점 카페.", "detail": "한큐 우메다 본점 7층의 카페. 마이센 식기에 음료와 디저트를 내는 것이 특징이라 쇼핑 중 조금 특별하게 쉬고 싶을 때 좋은 후보야.", "menus": ["아프터눈티", "케이크", "커피·홍차"], "tips": ["한큐 우메다 7층", "고급스러운 카페"], "query": "MEISSEN Café Hankyu Umeda"}, {"area": "오사카역·우메다", "category": "쇼콜라·카페", "name": "Bvlgari Osaka Café", "rating": 4.0, "summary": "불가리 감성의 세련된 카페, 초콜릿·디저트·가벼운 이탈리안.", "detail": "한큐 우메다 본점 5층의 불가리 카페. 쇼핑 중 분위기 좋은 공간에서 초콜릿과 디저트, 음료를 즐기고 싶을 때 넣기 좋은 곳이야.", "menus": ["초콜릿", "디저트", "커피", "가벼운 이탈리안"], "tips": ["한큐 우메다 5층", "분위기 우선"], "query": "Bvlgari Osaka Café Hankyu Umeda"}, {"area": "오사카역·우메다", "category": "일본식 양식", "name": "Grill Capital TOUYOUTEI in Hankyu", "rating": 4.1, "summary": "비프시튜 소스 햄버그와 토마토 샐러드가 유명한 교토 노포 양식집.", "detail": "한큐 우메다 본점 12층. 일본식 양식의 정석 같은 곳으로 햄버그와 통토마토 샐러드가 대표라, 쇼핑 중 든든하고 무난한 식사를 원할 때 좋음.", "menus": ["햄버그 스테이크", "통토마토 샐러드", "양식 세트"], "tips": ["한큐 우메다 12층", "무난하고 든든한 식사"], "query": "Grill Capital TOUYOUTEI Hankyu Umeda"}];
+let aiPlaces = [];
+let places = [...staticPlaces];
+const areaOrder = ["전체","숙소 근처","오사카역·우메다","신사이바시","혼마치·요도야바시","아리마온천","기타"];
+let filter="전체", q="", currentIndex=0;
+
+const config=window.OSAKA_CONFIG||{};
+const configured=Boolean(config.SUPABASE_URL && config.SUPABASE_PUBLISHABLE_KEY && !String(config.SUPABASE_URL).includes("YOUR_"));
+const grid=document.getElementById("grid"), tabs=document.getElementById("tabs"), count=document.getElementById("count");
+const detail=document.getElementById("detail"), panel=document.getElementById("panel"), backdrop=document.getElementById("backdrop");
+const addModal=document.getElementById("addModal"), addStatus=document.getElementById("addStatus"), submitAdd=document.getElementById("submitAdd");
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function mapSearch(q){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q)}
+function publicHeaders(){return {"apikey":config.SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"}}
+
+function normalizeAI(row){
+  return {
+    ...row,
+    rating: row.rating == null ? null : Number(row.rating),
+    reviews: row.review_count == null ? null : Number(row.review_count),
+    menus: Array.isArray(row.menus) ? row.menus : [],
+    tips: Array.isArray(row.highlights) ? row.highlights : [],
+    sources: Array.isArray(row.maps_sources) ? row.maps_sources : [],
+    detail: row.description || "",
+    query: row.google_maps_uri || row.maps_url || row.name,
+    ai_generated:true
+  };
+}
+
+async function loadAIPlaces(){
+  if(!configured){
+    document.getElementById("setupNote").classList.add("show");
+    return;
+  }
+  try{
+    const url=config.SUPABASE_URL.replace(/\/$/,"")+"/rest/v1/gemini_places?status=eq.approved&select=*&order=created_at.desc";
+    const res=await fetch(url,{headers:publicHeaders()});
+    if(!res.ok) throw new Error("DB "+res.status);
+    aiPlaces=(await res.json()).map(normalizeAI);
+    places=[...staticPlaces,...aiPlaces];
+    renderList();
+  }catch(e){
+    console.warn("Gemini places load failed",e);
+  }
+}
+
+function renderTabs(){
+  const available=new Set(places.map(p=>p.area||"기타"));
+  tabs.innerHTML=areaOrder.filter(a=>a==="전체"||available.has(a)).map(a=>`<button class="tab ${a===filter?'active':''}" data-tab="${esc(a)}">${esc(a)}</button>`).join("");
+  tabs.querySelectorAll("button").forEach(btn=>btn.onclick=()=>{filter=btn.dataset.tab;renderList();});
+}
+
+function detailMapUrl(p){
+  return p.google_maps_uri || p.maps_url || mapSearch(p.query||p.name);
+}
+
+function showDetail(index,mobileOpen=true){
+  currentIndex=index;
+  const p=places[index];
+  if(!p) return;
+  const rating = p.rating == null ? "–" : Number(p.rating).toFixed(1);
+  const reviews = p.reviews ? ` · 리뷰 ${Number(p.reviews).toLocaleString()}개` : "";
+  const menus = (p.menus||[]).map(m=>{
+    if(Array.isArray(m)) return `<div class="menuitem"><span>${esc(m[0])}</span><span>${esc(m[1]||"추천")}</span></div>`;
+    if(typeof m==="object") return `<div class="menuitem"><span>${esc(m.name||"")}</span><span>${esc(m.price_or_note||m.note||"추천")}</span></div>`;
+    return `<div class="menuitem"><span>${esc(m)}</span><span>추천</span></div>`;
+  }).join("") || `<div class="info-card"><div>확실히 확인된 추천 메뉴 정보 없음</div></div>`;
+  const tips = (p.tips||p.highlights||[]).map(t=>`<li>${esc(t)}</li>`).join("") || `<li>공개된 정보 기준으로 정리한 가게야.</li>`;
+  const sources = (p.sources||[]).map(s=>`<a class="source-link" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><div class="source-brand" translate="no">Google Maps</div><b>${esc(s.name||p.name)}</b></a>`).join("");
+  const infoCards = [
+    p.address ? `<div class="info-card"><label>주소</label><div>${esc(p.address)}</div></div>` : "",
+    p.hours ? `<div class="info-card"><label>영업시간</label><div>${esc(p.hours)}</div></div>` : "",
+    p.phone ? `<div class="info-card"><label>전화</label><div>${esc(p.phone)}</div></div>` : "",
+    p.price ? `<div class="info-card"><label>가격대</label><div>${esc(p.price)}</div></div>` : ""
+  ].join("");
+
+  detail.innerHTML=`
+    <div class="banner">
+      <div class="bannerbox"><div class="pin">📍</div><div><div class="bannerarea">${esc(p.area||"기타")}</div><div class="bannercat">${esc(p.category||"맛집")}</div></div></div>
     </div>
     <div class="body">
       <h2 class="title">${esc(p.name)}</h2>
-      <div class="submeta">⭐ <b>${Number(p.rating).toFixed(1)}</b> · ${esc(p.category)} · ${esc(p.area)}</div>
-      <div class="quick">
-        <a href="${mapsUrl(p.query || p.name)}" target="_blank" rel="noopener noreferrer">지도 보기</a>
-        <a href="${mapsUrl(p.query || p.name)}" target="_blank" rel="noopener noreferrer">가게 검색</a>
-      </div>
-      <div class="section">
+      <div class="submeta">⭐ <b>${rating}</b>${reviews} · ${esc(p.category||"")}</div>
+      ${p.ai_generated && p.submitted_by ? `<div class="contributor">✨ ${esc(p.submitted_by)} 님이 Gemini로 추가</div>`:""}
+      ${p.user_note ? `<div class="user-note">💬 ${esc(p.user_note)}</div>`:""}
+
+      <a class="map-only" href="${detailMapUrl(p)}" target="_blank" rel="noopener noreferrer">Google 지도 보기</a>
+
+      ${infoCards ? `<div class="info-grid">${infoCards}</div>` : ""}
+
+      <div class="detail-card">
         <h3>한줄 소개</h3>
-        <p>${esc(p.summary)}</p>
+        <p>${esc(p.summary||"")}</p>
       </div>
-      <div class="section">
+      <div class="detail-card">
         <h3>가게 설명</h3>
-        <p>${esc(p.detail)}</p>
+        <p>${esc(p.detail||p.description||p.summary||"")}</p>
       </div>
-      <div class="section">
-        <h3>대표 메뉴</h3>
-        <div class="menu">${menusHtml}</div>
+      <div class="detail-card">
+        <h3>분위기와 이용객 평가</h3>
+        <ul class="bullets">${tips}</ul>
       </div>
-      <div class="section">
-        <h3>메모</h3>
-        <div class="tiprow">${tipsHtml}</div>
+      <div class="detail-card">
+        <h3>추천 메뉴</h3>
+        <div class="menu">${menus}</div>
       </div>
-    </div>
-  `;
-  document.querySelectorAll(".card").forEach(card => {
-    card.classList.toggle("selected", Number(card.dataset.index) === index);
-  });
-  if (mobileOpen && window.matchMedia("(max-width:980px)").matches) {
-    panel.classList.add("open");
-    backdrop.classList.add("show");
-    document.body.style.overflow = "hidden";
+      ${sources ? `<div class="detail-card"><h3>출처</h3><div class="sources">${sources}</div><div class="maps-attribution">위 AI 요약의 장소 정보에는 <span translate="no">Google Maps</span> 그라운딩 데이터가 사용됐어.</div></div>` : ""}
+    </div>`;
+
+  document.querySelectorAll(".card").forEach(c=>c.classList.toggle("selected",Number(c.dataset.index)===index));
+  if(mobileOpen && window.matchMedia("(max-width:980px)").matches){
+    panel.classList.add("open");backdrop.classList.add("show");document.body.style.overflow="hidden";
   }
 }
-function closeMobile(){
-  panel.classList.remove("open");
-  backdrop.classList.remove("show");
-  document.body.style.overflow = "";
-}
-document.getElementById("closemobile").onclick = closeMobile;
-backdrop.onclick = closeMobile;
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeMobile(); });
+
+function closeMobile(){panel.classList.remove("open");backdrop.classList.remove("show");document.body.style.overflow=""}
+document.getElementById("closemobile").onclick=closeMobile; backdrop.onclick=closeMobile;
 
 function renderList(){
   renderTabs();
-  const q = query.trim().toLowerCase();
-  const items = places
-    .map((p,i) => ({...p, _index:i}))
-    .filter(p => filter === "전체" || p.area === filter)
-    .filter(p => !q || (p.name + " " + p.category + " " + p.area + " " + p.summary + " " + p.detail + " " + p.menus.join(" ")).toLowerCase().includes(q))
-    .sort((a,b) => b.rating - a.rating || a.name.localeCompare(b.name, "ko"));
-
-  count.textContent = `${items.length}곳`;
-  grid.innerHTML = items.map(p => `
+  const needle=q.trim().toLowerCase();
+  const items=places.map((p,i)=>({...p,_index:i}))
+    .filter(p=>filter==="전체"||(p.area||"기타")===filter)
+    .filter(p=>!needle||(p.name+" "+(p.category||"")+" "+(p.area||"")+" "+(p.summary||"")+" "+(p.detail||p.description||"")+" "+JSON.stringify(p.menus||[])).toLowerCase().includes(needle))
+    .sort((a,b)=>(Number(b.rating||0)-Number(a.rating||0))||a.name.localeCompare(b.name,"ko"));
+  count.textContent=`${items.length}곳`;
+  grid.innerHTML=items.map(p=>`
     <article class="card ${p._index===currentIndex?'selected':''}" data-index="${p._index}">
       <div class="row">
         <div>
-          <div class="name" data-open="${p._index}">${esc(p.name)}</div>
-          <div class="tags"><span class="cat">${esc(p.category)}</span><span class="area">📍 ${esc(p.area)}</span></div>
+          <div class="name" data-open="${p._index}">${esc(p.name)}${p.ai_generated?'<span class="ai-badge">Gemini</span>':''}</div>
+          <div class="tags"><span class="cat">${esc(p.category||"맛집")}</span><span class="area">📍 ${esc(p.area||"기타")}</span></div>
         </div>
-        <div class="score">⭐ ${Number(p.rating).toFixed(1)}</div>
+        <div class="score">⭐ ${p.rating==null?"–":Number(p.rating).toFixed(1)}</div>
       </div>
-      <div class="summary">${esc(p.summary)}</div>
+      <div class="summary">${esc(p.summary||"")}</div>
+      ${p.user_note?`<div class="user-note">💬 ${esc(p.user_note)}</div>`:""}
       <div class="actions">
         <button class="btn detailbtn" data-open="${p._index}">상세 정보</button>
-        <a class="btn mapbtn" href="${mapsUrl(p.query || p.name)}" target="_blank" rel="noopener noreferrer">지도 보기</a>
+        <a class="btn mapbtn" href="${detailMapUrl(p)}" target="_blank" rel="noopener noreferrer">지도 보기</a>
       </div>
-    </article>
-  `).join("");
-  document.querySelectorAll("[data-open]").forEach(el => {
-    el.onclick = () => showDetail(Number(el.dataset.open), true);
-  });
+    </article>`).join("");
+  document.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>showDetail(Number(el.dataset.open),true));
 }
 
-document.getElementById("search").addEventListener("input", e => {
-  query = e.target.value;
-  renderList();
-});
+document.getElementById("search").oninput=e=>{q=e.target.value;renderList();};
+
+function setStatus(type,msg){addStatus.className="status show "+type;addStatus.textContent=msg;}
+function openAdd(){
+  addModal.classList.add("show");
+  if(!configured) setStatus("err","Supabase 연결 전이야. config.js에 Project URL과 Publishable Key를 먼저 넣어줘.");
+  else addStatus.className="status";
+}
+function closeAdd(){addModal.classList.remove("show");}
+document.getElementById("openAdd").onclick=openAdd;
+document.getElementById("closeAdd").onclick=closeAdd;
+addModal.onclick=e=>{if(e.target===addModal) closeAdd();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAdd();closeMobile();}});
+
+document.getElementById("addForm").onsubmit=async e=>{
+  e.preventDefault();
+  if(!configured) return setStatus("err","먼저 Supabase 연결 설정이 필요해.");
+  const payload={
+    name:document.getElementById("placeName").value.trim(),
+    area_hint:document.getElementById("areaHint").value,
+    category_hint:document.getElementById("categoryHint").value.trim(),
+    location_hint:document.getElementById("locationHint").value.trim(),
+    maps_url:document.getElementById("mapsUrl").value.trim(),
+    user_note:document.getElementById("userNote").value.trim(),
+    submitted_by:document.getElementById("submittedBy").value.trim()
+  };
+  if(!payload.name) return setStatus("err","가게 이름을 입력해줘.");
+  submitAdd.disabled=true;
+  setStatus("work","✨ Gemini가 Google Maps에서 정확한 가게를 찾고 카드용 내용을 만드는 중…");
+  try{
+    const fn=config.SUPABASE_URL.replace(/\/$/,"")+"/functions/v1/gemini-place";
+    const res=await fetch(fn,{method:"POST",headers:publicHeaders(),body:JSON.stringify(payload)});
+    const body=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(body.error||body.message||"추가 실패 ("+res.status+")");
+    setStatus("ok",body.existing?"이미 추가된 가게라 기존 정보를 불러왔어.":"✅ 추가 완료! 같은 사이트를 보는 사람에게도 바로 보여.");
+    document.getElementById("addForm").reset();
+    await loadAIPlaces();
+    const id=body.place?.id;
+    if(id){
+      const idx=places.findIndex(p=>p.id===id);
+      if(idx>=0) showDetail(idx,false);
+    }
+  }catch(err){
+    setStatus("err","추가하지 못했어: "+err.message);
+  }finally{
+    submitAdd.disabled=false;
+  }
+};
 
 renderList();
-showDetail(0, false);
+showDetail(0,false);
+loadAIPlaces();
 </script>
 </body>
 </html>
